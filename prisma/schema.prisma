@@ -1,0 +1,190 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+  // Further reading:
+  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+  url      = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+enum Role {
+  USER
+  STAFF
+  ADMIN
+  GUEST
+}
+
+model Faculty {
+  facultyId   Int         @id @default(autoincrement())
+  facultyName String      @unique
+  programmes  Programme[]
+  users       User[]
+}
+
+// Necessary for Next auth
+model Account {
+  accountId         Int     @id @default(autoincrement())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  sessionId    String   @id @default(cuid())
+  sessionToken String   @unique
+  user         User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  userId       Int
+  expiresAt    DateTime
+}
+
+model User {
+  userId        Int             @id @default(autoincrement())
+  name          String?
+  role          Role            @default(USER)
+  active        Boolean         @default(true)
+  dateOfBirth   DateTime
+  gender        String          @db.Char(1)
+  phoneNo       Int?            @unique
+  email         String?         @unique
+  emailVerified DateTime?
+  password      String?
+  profileBio    String?         @db.Text
+  lastLogin     DateTime?
+  faculty       Faculty?        @relation(fields: [facultyId], references: [facultyId], onDelete: NoAction)
+  facultyId     Int?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  programmes    UserProgramme[]
+  posts         Post[]
+  comments      Comment[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+}
+
+model Tag {
+  tagId   Int       @id @default(autoincrement())
+  tagName String    @unique
+  posts   PostTag[]
+}
+
+model Category {
+  categoryId   Int    @id @default(autoincrement())
+  categoryName String @unique
+  posts        Post[]
+}
+
+model Post {
+  postId      Int       @id @default(autoincrement())
+  title       String
+  description String?   @db.Text
+  postRating  Int       @default(0)
+  user        User      @relation(fields: [userId], references: [userId], onDelete: NoAction)
+  userId      Int
+  category    Category  @relation(fields: [categoryId], references: [categoryId], onDelete: NoAction)
+  categoryId  Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime?
+  tags        PostTag[]
+  comments    Comment[]
+}
+
+model PostTag {
+  post   Post @relation(fields: [postId], references: [postId], onDelete: NoAction)
+  postId Int
+  tag    Tag  @relation(fields: [tagId], references: [tagId], onDelete: NoAction)
+  tagId  Int
+
+  @@id([postId, tagId])
+}
+
+model Comment {
+  commentId     Int      @id @default(autoincrement())
+  content       String   @db.Text
+  commentRating Int      @default(0)
+  post          Post     @relation(fields: [postId], references: [postId], onDelete: NoAction)
+  postId        Int
+  user          User     @relation(fields: [userId], references: [userId], onDelete: NoAction)
+  userId        Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+}
+
+model Course {
+  courseId       Int                   @id @default(autoincrement())
+  courseName     String                @unique
+  tutorialGroups CourseTutorialGroup[]
+  programmes     ProgrammeCourse[]
+}
+
+model Programme {
+  programmeId   Int               @id @default(autoincrement())
+  programmeName String            @unique
+  faculty       Faculty           @relation(fields: [facultyId], references: [facultyId], onDelete: NoAction)
+  facultyId     Int
+  users         UserProgramme[]
+  courses       ProgrammeCourse[]
+  tutorialGroup TutorialGroup[]
+}
+
+model TutorialGroup {
+  tutorialGroupId   Int                   @id @default(autoincrement())
+  tutorialGroupName String                @unique
+  programme         Programme             @relation(fields: [programmeId], references: [programmeId], onDelete: NoAction)
+  programmeId       Int
+  courses           CourseTutorialGroup[]
+}
+
+model CourseTutorialGroup {
+  course          Course        @relation(fields: [courseId], references: [courseId], onDelete: NoAction)
+  courseId        Int
+  tutorialGroup   TutorialGroup @relation(fields: [tutorialGroupId], references: [tutorialGroupId], onDelete: NoAction)
+  tutorialGroupId Int
+
+  @@id([courseId, tutorialGroupId])
+}
+
+model ProgrammeCourse {
+  programmeId Int
+  programme   Programme @relation(fields: [programmeId], references: [programmeId], onDelete: NoAction)
+  courseId    Int
+  course      Course    @relation(fields: [courseId], references: [courseId], onDelete: NoAction)
+
+  @@id([programmeId, courseId])
+}
+
+model UserProgramme {
+  userId      Int
+  user        User      @relation(fields: [userId], references: [userId], onDelete: NoAction)
+  programmeId Int
+  programme   Programme @relation(fields: [programmeId], references: [programmeId], onDelete: NoAction)
+
+  @@id([userId, programmeId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
