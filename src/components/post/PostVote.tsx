@@ -1,8 +1,7 @@
 import { IconThumbDown, IconThumbUp } from "@tabler/icons";
-import Button from "components/Button";
 
 type PostVoteProps = {
-  children?: React.ReactNode;
+  votes?: number;
   isFlexRow?: boolean;
 };
 
@@ -21,7 +20,7 @@ const PostVote = (props: PostVoteProps) => {
           stroke={1.5}
         />
       </button>
-      <div className="text-zinc-200">69</div>
+      <div className="text-zinc-200">{props.votes}</div>
       <button>
         <IconThumbDown
           className="text-zinc-200 transition-colors hover:cursor-pointer hover:fill-rose-400/40"
