@@ -1,16 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider     = "mysql"
-  // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-  // Further reading:
-  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
@@ -65,28 +58,30 @@ model Session {
 }
 
 model User {
-  id            String          @id @default(cuid())
-  name          String?
-  role          Role            @default(USER)
-  active        Boolean         @default(true)
-  dateOfBirth   DateTime?
-  gender        Gender?
-  phoneNo       Int?            @unique
-  email         String?         @unique
-  emailVerified DateTime?
-  password      String?
-  profileBio    String?         @db.Text
-  lastLogin     DateTime?
-  faculty       Faculty?        @relation(fields: [facultyId], references: [facultyId], onDelete: NoAction)
-  facultyId     Int?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  programmes    UserProgramme[]
-  posts         Post[]
-  comments      Comment[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @default(now())
+  id             String          @id @default(cuid())
+  name           String?
+  role           Role            @default(USER)
+  active         Boolean         @default(true)
+  dateOfBirth    DateTime?
+  gender         Gender?
+  phoneNo        Int?            @unique
+  email          String?         @unique
+  emailVerified  DateTime?
+  password       String?
+  profileBio     String?         @db.Text
+  lastLogin      DateTime?
+  faculty        Faculty?        @relation(fields: [facultyId], references: [facultyId], onDelete: NoAction)
+  facultyId      Int?
+  image          String?
+  accounts       Account[]
+  sessions       Session[]
+  programmes     UserProgramme[]
+  posts          Post[]
+  postUpvotes    PostUpvote[]
+  comments       Comment[]
+  commentUpvotes CommentUpvote[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @default(now())
 
   @@index([facultyId])
 }
@@ -104,27 +99,39 @@ model Category {
 }
 
 model Post {
-  id          Int         @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   title       String
-  description String?     @db.Text
-  postRating  Int         @default(0)
-  user        User        @relation(fields: [userId], references: [id], onDelete: NoAction)
+  description String?      @db.Text
+  postUpvote  Int          @default(0)
+  user        User         @relation(fields: [userId], references: [id], onDelete: NoAction)
   userId      String
-  category    Category    @relation(fields: [categoryId], references: [id], onDelete: NoAction)
+  category    Category     @relation(fields: [categoryId], references: [id], onDelete: NoAction)
   categoryId  Int
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now())
   flairs      PostFlair[]
+  upvotes     PostUpvote[]
   comments    Comment[]
 
   @@index([userId])
   @@index([categoryId])
 }
 
+model PostUpvote {
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId Int
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@id([postId, userId])
+  @@index([postId])
+  @@index([userId])
+}
+
 model PostFlair {
-  post    Post  @relation(fields: [postId], references: [id], onDelete: NoAction)
+  post    Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId  Int
-  flair   Flair @relation(fields: [flairId], references: [id], onDelete: NoAction)
+  flair   Flair @relation(fields: [flairId], references: [id], onDelete: Cascade)
   flairId Int
 
   @@id([postId, flairId])
@@ -133,17 +140,32 @@ model PostFlair {
 }
 
 model Comment {
-  id            Int      @id @default(autoincrement())
-  content       String   @db.Text
-  commentRating Int      @default(0)
-  post          Post     @relation(fields: [postId], references: [id], onDelete: NoAction)
-  postId        Int
-  user          User     @relation(fields: [userId], references: [id], onDelete: NoAction)
-  userId        String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
+  id        Int             @id @default(autoincrement())
+  content   String          @db.Text
+  post      Post            @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+  user      User            @relation(fields: [userId], references: [id], onDelete: NoAction)
+  userId    String
+  parent    Comment?        @relation("ParentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentId  Int?
+  children  Comment[]       @relation("ParentChild")
+  upvotes   CommentUpvote[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @default(now())
 
   @@index([postId])
+  @@index([userId])
+  @@index([parentId])
+}
+
+model CommentUpvote {
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId Int
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  @@id([commentId, userId])
+  @@index([commentId])
   @@index([userId])
 }
 
