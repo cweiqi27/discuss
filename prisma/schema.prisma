@@ -102,7 +102,6 @@ model Post {
   id          Int          @id @default(autoincrement())
   title       String
   description String?      @db.Text
-  postUpvote  Int          @default(0)
   user        User         @relation(fields: [userId], references: [id], onDelete: NoAction)
   userId      String
   category    Category     @relation(fields: [categoryId], references: [id], onDelete: NoAction)
