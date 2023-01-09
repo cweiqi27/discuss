@@ -1,5 +1,7 @@
+import Avatar from "components/Avatar";
 import Card from "components/layout/Card";
 import Link from "next/link";
+import { RouterOutputs } from "utils/trpc";
 import PostContent from "./PostContent";
 import PostFlair from "./PostFlair";
 import PostLoadingSkeleton from "./PostLoadingSkeleton";
@@ -7,8 +9,7 @@ import PostTitle from "./PostTitle";
 import PostVote from "./PostVote";
 
 type PostCardProps = {
-  title: string;
-  description?: string;
+  post: RouterOutputs["post"]["getInfinitePost"]["posts"][number];
   isLoading?: boolean;
 };
 
@@ -24,7 +25,10 @@ const PostCard = (props: PostCardProps) => {
         >
           {/* Left */}
           <div className="flex flex-col justify-between gap-4">
-            <span className="rounded-full bg-pink-400 p-12"></span>
+            <Avatar
+              src={props.post.user.image ?? ""}
+              alt={props.post.user.name ?? ""}
+            />
             <PostVote />
           </div>
           {/* Right */}
@@ -34,8 +38,8 @@ const PostCard = (props: PostCardProps) => {
             </div>
             <Link href="/">
               <div className="flex flex-col items-start justify-center gap-2">
-                <PostTitle title={props.title} />
-                <PostContent description={props.description} />
+                <PostTitle title={props.post.title} />
+                <PostContent description={props.post.description} />
               </div>
             </Link>
           </div>

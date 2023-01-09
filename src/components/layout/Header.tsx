@@ -5,7 +5,7 @@ import LogoLink from "components/LogoLink";
 const Header = () => {
   return (
     <nav
-      className="background-blur flex w-screen items-end justify-between border-b-2 
+      className="z-50 flex w-full items-end justify-between border-b-2 
     border-slate-800/5 bg-gradient-to-tl from-slate-50/5 via-slate-50/10 to-slate-50/20 px-2 drop-shadow md:px-4"
     >
       <LogoLink />

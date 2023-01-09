@@ -7,4 +7,10 @@ export const authRouter = router({
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
   }),
+  getUserId: publicProcedure.query(({ ctx }) => {
+    return ctx.session?.user?.id;
+  }),
+  getUserImg: publicProcedure.query(({ ctx }) => {
+    return ctx.session?.user?.image;
+  }),
 });

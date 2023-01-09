@@ -9,6 +9,8 @@ const LogoLink = () => {
         alt="logo"
         width={80}
         height={80}
+        className="hover:opacity-80"
+        priority
       />
     </Link>
   );

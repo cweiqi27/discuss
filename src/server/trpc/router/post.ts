@@ -34,6 +34,42 @@ export const postRouter = router({
       }
     }),
 
+  // Infinite scroll
+  getInfinitePost: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).default(10),
+        cursor: z.number().nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { limit, cursor } = input;
+      const posts = await ctx.prisma.post.findMany({
+        take: limit + 1,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          user: {
+            select: {
+              name: true,
+              image: true,
+              id: true,
+            },
+          },
+        },
+      });
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (posts.length > limit) {
+        const nextItem = posts.pop() as typeof posts[number];
+        nextCursor = nextItem.id;
+      }
+      return {
+        posts,
+        nextCursor,
+      };
+    }),
+
   createPost: protectedProcedure
     .input(
       z.object({

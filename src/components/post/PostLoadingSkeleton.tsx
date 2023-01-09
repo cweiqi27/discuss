@@ -4,10 +4,10 @@ const PostLoadingSkeleton = () => {
   return (
     <Card
       isFlexRow
-      addStyles="animate-pulse background-blur gap-8 mb-2 w-full border-[0.25px] border-zinc-200/40 bg-gradient-to-br from-zinc-50/5 to-zinc-50/10 shadow"
+      addStyles="animate-pulse background-blur h-48 gap-8 mb-2 w-full border-[0.25px] border-zinc-200/40 bg-gradient-to-br from-zinc-50/5 to-zinc-50/10 shadow"
     >
       {/* Avatar  */}
-      <div className="h-20 w-20 rounded-full bg-gray-400"></div>
+      <div className="h-12 w-12 rounded-full bg-gray-400"></div>
       {/* Title */}
       <div className="flex-1 space-y-6 py-1">
         {/* Flair */}

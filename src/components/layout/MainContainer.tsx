@@ -4,7 +4,7 @@ type MainContainerProps = {
 
 const MainContainer = (props: MainContainerProps) => {
   return (
-    <main className="flex min-h-screen flex-col items-center gap-8 bg-neutral-800">
+    <main className="flex min-h-screen flex-col items-center gap-8 overflow-hidden bg-neutral-800">
       {props.children}
     </main>
   );

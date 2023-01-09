@@ -1,16 +1,16 @@
 import type { FieldValues, UseFormRegister } from "react-hook-form";
 
 type InputProps = {
-  label: string;
+  label?: string;
   name: string;
   type: string;
   placeholder?: string;
   register: UseFormRegister<FieldValues>;
   required?: boolean;
   addStyles?: string;
+  click?: () => void;
 };
-const inputStyles =
-  "rounded border-[0.005rem] border-white bg-zinc-400/40 outline-white";
+const inputStyles = "rounded p-2 bg-zinc-400/40 outline-zinc-200 text-zinc-200";
 
 const Input = (props: InputProps) => {
   return (
@@ -21,6 +21,7 @@ const Input = (props: InputProps) => {
         type={props.type}
         placeholder={props.placeholder}
         {...props.register(props.name)}
+        onClick={props.click}
       />
     </>
   );

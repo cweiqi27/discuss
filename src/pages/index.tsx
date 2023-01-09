@@ -2,29 +2,19 @@ import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { trpc } from "../utils/trpc";
-import PostCard from "components/post/PostCard";
-import PostVote from "components/post/PostVote";
 import Layout from "components/layout/Layout";
+import { PusherProvider } from "utils/pusher";
+import Pusher from "pusher-js";
+import PostCreate from "components/post/PostCreate";
+import PostList from "components/post/PostList";
 
 const Home: NextPage = (props) => {
-  const hello = trpc.example.hello.useQuery({ text: "world" });
-
   return (
     <Layout>
-      <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-        T<span className="text-[hsl(280,100%,70%)]">E</span>ST
-      </h1>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8"></div>
+      <PostCreate />
       <div className="flex flex-col items-center gap-2">
-        <p className="text-2xl text-white">
-          {hello.data ? hello.data.greeting : "Loading..."}
-        </p>
+        <PostList />
         <AuthShowcase />
-        <PostCard
-          title="This is a title!This is a title!This is a title!This is a title!This is a title!This is a title!This is a title!This is a title!This is a title!This is a title!This is a title!"
-          description="some content here"
-        ></PostCard>
-        <PostVote isFlexRow></PostVote>
       </div>
     </Layout>
   );
@@ -54,4 +44,19 @@ const AuthShowcase: React.FC = () => {
       </button>
     </div>
   );
+};
+
+const PusherShowcase: React.FC = () => {
+  const pusher = new Pusher("12bf7d67fc9ed5e498fa", {
+    cluster: "ap1",
+  });
+
+  const channel = pusher.subscribe("my-channel");
+  channel.bind("my-event", function (data: string) {
+    alert(JSON.stringify(data));
+  });
+
+  const something = trpc.pusher.trigger.useQuery();
+
+  return <></>;
 };

@@ -1,5 +1,5 @@
 type PostContentProps = {
-  description?: string;
+  description?: string | null;
 };
 
 const PostContent = (props: PostContentProps) => {
