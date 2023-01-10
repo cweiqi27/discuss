@@ -11,7 +11,7 @@ const Avatar = (props: AvatarProps) => {
     src: props.src,
   });
   return props.src === "" ? (
-    <div className="h-12 w-12 animate-pulse rounded-full bg-gray-400" />
+    <div className="h-12 w-12 flex-none animate-pulse rounded-full bg-gray-400" />
   ) : (
     <Image
       src={props.src}
