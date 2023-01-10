@@ -29,6 +29,8 @@ export type ModalProps = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   title: string;
   description: string;
-  bgColor: string;
+  bgColor?: string;
+  titleColor?: string;
+  descColor?: string;
   children?: React.ReactNode;
 };
