@@ -11,10 +11,10 @@ import PostList from "components/post/PostList";
 const Home: NextPage = (props) => {
   return (
     <Layout>
+      <AuthShowcase />
       <PostCreate />
       <div className="flex flex-col items-center gap-2">
         <PostList />
-        <AuthShowcase />
       </div>
     </Layout>
   );
