@@ -1,3 +1,54 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .btn {
+    @apply font-semibold transition;
+  }
+  .btn.btn-sm {
+    @apply px-4 py-2 text-sm;
+  }
+  .btn.btn-md {
+    @apply py-2 px-6;
+  }
+  .btn.btn-lg {
+    @apply px-8 py-4 text-lg;
+  }
+  .btn-primary {
+    @apply bg-zinc-50/10 text-white;
+  }
+  .btn-primary:hover {
+    @apply bg-zinc-50/20;
+  }
+  .btn-primary.btn-outline {
+    @apply border border-zinc-600 bg-transparent text-zinc-600 hover:bg-zinc-600 hover:text-white;
+  }
+  .btn-primary-disabled {
+    @apply cursor-not-allowed bg-zinc-50/10 text-white opacity-50;
+  }
+  .btn-secondary {
+    @apply bg-rose-200 text-rose-700;
+  }
+  .btn-secondary:hover {
+    @apply bg-rose-300;
+  }
+  .btn-secondary.btn-outline {
+    @apply border border-rose-600 bg-transparent text-rose-600 hover:bg-rose-600 hover:text-white;
+  }
+  .btn-secondary-disabled {
+    @apply cursor-not-allowed bg-rose-500 text-white opacity-50;
+  }
+  .btn-tertiary {
+    @apply bg-slate-200 text-slate-700;
+  }
+  .btn-tertiary:hover {
+    @apply bg-slate-300;
+  }
+  .btn-tertiary.btn-outline {
+    @apply border border-slate-600 bg-transparent text-slate-600 hover:bg-slate-600 hover:text-white;
+  }
+  .btn-tertiary-disabled {
+    @apply cursor-not-allowed bg-slate-200 text-slate-700 opacity-50;
+  }
+}
