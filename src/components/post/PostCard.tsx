@@ -1,4 +1,4 @@
-import Avatar from "components/Avatar";
+import Avatar from "components/Avatar/Avatar";
 import Card from "components/layout/Card";
 import Link from "next/link";
 import { RouterOutputs } from "utils/trpc";
