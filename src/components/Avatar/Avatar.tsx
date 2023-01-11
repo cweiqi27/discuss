@@ -4,6 +4,7 @@ import { trpc } from "utils/trpc";
 type AvatarProps = {
   src: string;
   alt: string;
+  addStyles?: string;
 };
 
 const Avatar = (props: AvatarProps) => {
@@ -11,14 +12,16 @@ const Avatar = (props: AvatarProps) => {
     src: props.src,
   });
   return props.src === "" ? (
-    <div className="h-12 w-12 flex-none animate-pulse rounded-full bg-gray-400" />
+    <div
+      className={`h-12 w-12 animate-pulse rounded-full bg-gray-400 ${props.addStyles}`}
+    />
   ) : (
     <Image
       src={props.src}
       alt={props.alt}
       width="48"
       height="48"
-      className="rounded-full"
+      className={`rounded-full ${props.addStyles}`}
     />
   );
 };
