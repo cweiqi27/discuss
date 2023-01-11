@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@headlessui/react': ^1.7.7
   '@headlessui/tailwindcss': ^0.1.2
+  '@hookform/error-message': ^2.0.1
   '@hookform/resolvers': ^2.9.10
   '@next-auth/prisma-adapter': ^1.0.5
   '@plaiceholder/next': ^2.5.0
@@ -55,6 +56,7 @@ specifiers:
 dependencies:
   '@headlessui/react': 1.7.7_biqbaboplfbrettd7655fr4n2y
   '@headlessui/tailwindcss': 0.1.2_tailwindcss@3.2.4
+  '@hookform/error-message': 2.0.1_jfzeisyfbrsqympidfnhz6i2mm
   '@hookform/resolvers': 2.9.10_react-hook-form@7.41.1
   '@next-auth/prisma-adapter': 1.0.5_o5bqbtvtgq3azu224hvvkl6nwy
   '@plaiceholder/next': 2.5.0_next@13.0.2+sharp@0.31.3
@@ -512,6 +514,18 @@ packages:
       tailwindcss: ^3.0
     dependencies:
       tailwindcss: 3.2.4_postcss@8.4.20
+    dev: false
+
+  /@hookform/error-message/2.0.1_jfzeisyfbrsqympidfnhz6i2mm:
+    resolution: {integrity: sha512-U410sAr92xgxT1idlu9WWOVjndxLdgPUHEB8Schr27C9eh7/xUnITWpCMF93s+lGiG++D4JnbSnrb5A21AdSNg==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+      react-hook-form: ^7.0.0
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-hook-form: 7.41.1_react@18.2.0
     dev: false
 
   /@hookform/resolvers/2.9.10_react-hook-form@7.41.1:
