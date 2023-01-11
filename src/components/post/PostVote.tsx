@@ -11,7 +11,7 @@ const PostVote = (props: PostVoteProps) => {
   return (
     <div
       className={`${voteContainerStyles} ${
-        props.isFlexRow ? "flex-row" : "flex-col items-center"
+        props.isFlexRow ? "sm:flex-row" : "sm:flex-col"
       }`}
     >
       <button>
