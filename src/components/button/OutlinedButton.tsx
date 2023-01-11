@@ -4,7 +4,8 @@ const OutlinedButton = (props: ButtonProps) => {
   return (
     <button
       onClick={(event) => props.handleClick(event, 1)}
-      className={`btn ${props.type} ${props.size} btn-outline rounded-lg`}
+      className={`btn ${props.colorType} ${props.size} btn-outline rounded-lg`}
+      type={props.type}
     >
       {props.children}
     </button>

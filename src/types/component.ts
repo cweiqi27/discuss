@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 
 // Reusable types for Button
-type ButtonType =
+type ButtonColorType =
   | "btn-primary"
   | "btn-secondary"
   | "btn-tertiary"
@@ -19,8 +19,9 @@ export type HandleClick = (
 export type ButtonProps = {
   handleClick: HandleClick;
   children?: React.ReactNode;
-  type: ButtonType;
+  colorType: ButtonColorType;
   size: ButtonSize;
+  type: "button" | "submit" | "reset";
 };
 
 // Reusable types for Modal
