@@ -6,11 +6,10 @@ type InputProps = {
   type: string;
   placeholder?: string;
   register: UseFormRegister<FieldValues>;
-  required?: boolean;
   addStyles?: string;
   click?: () => void;
 };
-const inputStyles = "rounded p-2 bg-zinc-400/40 outline-zinc-200 text-zinc-200";
+const inputStyles = "rounded p-2 bg-zinc-400/40 text-zinc-200";
 
 const Input = (props: InputProps) => {
   return (
