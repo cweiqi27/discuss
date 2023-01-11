@@ -16,21 +16,23 @@ const ModalGeneric = (props: ModalGenericProps) => {
       setIsOpen={props.setIsOpen}
       title={props.title}
       description={props.description}
-      bgColor="bg-gradient-to-r from-zinc-600/60 to-zinc-600/80"
+      bgColor="bg-gradient-to-br from-zinc-600/80 to-zinc-600/50"
       titleColor="text-zinc-100"
       descColor="text-zinc-300"
     >
       <SolidButton
-        type={props.type}
+        colorType={props.colorType}
         size={props.size}
         handleClick={props.handleClick}
+        type={props.type}
       >
         {props.buttonYes}
       </SolidButton>
       <SolidButton
-        type="btn-primary"
+        colorType="btn-primary"
         size={props.size}
         handleClick={props.handleClickNo}
+        type={props.type}
       >
         {props.buttonNo}
       </SolidButton>
