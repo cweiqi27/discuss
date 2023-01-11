@@ -1,4 +1,5 @@
 import { SubmitHandler, useForm } from "react-hook-form";
+import { ErrorMessage } from "@hookform/error-message";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { trpc } from "utils/trpc";
@@ -12,9 +13,14 @@ import useMeasure from "react-use-measure";
 import Avatar from "components/Avatar/Avatar";
 import ModalGeneric from "components/modal/ModalGeneric";
 import { useSession } from "next-auth/react";
+import SolidButton from "components/button/SolidButton";
+import PillButton from "components/button/PillButton";
 
+/*
+ * Validators for form fields
+ */
 const FormSchema = z.object({
-  title: z.string(),
+  title: z.string().min(1, { message: "Title is required." }),
   description: z.string().nullish(),
 });
 
@@ -36,22 +42,29 @@ const PostCreate = () => {
     reset,
     handleSubmit,
     getValues,
-    formState: { errors },
-  } = useForm({ resolver: zodResolver(FormSchema) });
+    clearErrors,
+    formState: { isDirty, errors },
+  } = useForm({
+    resolver: zodResolver(FormSchema),
+  });
 
   const onSubmit = async () => {
-    const title: FormSchemaType["title"] = getValues("title") || null;
+    const title: FormSchemaType["title"] = getValues("title");
     const description: FormSchemaType["description"] = getValues("description");
 
-    createPost.mutate({
-      title: title,
-      description: description,
-      userId: userId ?? "",
-      categoryId: 31,
-    });
+    if (!isDirty) {
+      setIsExpand(false);
+    } else {
+      createPost.mutate({
+        title: title,
+        description: description,
+        userId: userId ?? "",
+        categoryId: 31,
+      });
 
-    reset();
-    setIsExpand(false);
+      reset();
+      setIsExpand(false);
+    }
   };
 
   /*
@@ -65,18 +78,24 @@ const PostCreate = () => {
   const postCreateRef = useRef<HTMLDivElement>(null);
   const { data: sessionData } = useSession();
 
-  const handleClickOutside = () => {
-    isExpand && setIsModalOpen(true);
-  };
-
   const handleClickInside = () => {
     sessionData ? !isExpand && setIsExpand(true) : alert("Not signed in");
   };
 
+  const handleClickOutside = () => {
+    if (!isDirty) {
+      clearErrors();
+      setIsExpand(false);
+    } else setIsModalOpen(true);
+  };
+
   const handleClickDiscard = () => {
-    setIsModalOpen(false);
-    setIsExpand(false);
-    reset();
+    if (!isDirty || isModalOpen) {
+      setIsModalOpen(false);
+      reset();
+      clearErrors();
+      setIsExpand(false);
+    } else setIsModalOpen(true);
   };
 
   const handleClickCancel = () => {
@@ -96,11 +115,12 @@ const PostCreate = () => {
       y: 0,
       transition: {
         type: "spring",
-        duration: 0.7,
+        duration: 1,
+        bounce: 0,
       },
     },
     shrink: {
-      y: -40,
+      y: -60,
       transition: { duration: 0.2 },
       opacity: 0,
       transitionEnd: { display: "none" },
@@ -112,26 +132,41 @@ const PostCreate = () => {
       <motion.div
         ref={postCreateRef}
         animate={{ height }}
-        transition={{ type: "spring", duration: 0.7 }}
-        className="mb-8"
+        transition={{ type: "spring", bounce: 0, duration: 0.7 }}
+        className="mb-2"
       >
         <div ref={measureRef}>
-          <Card addStyles="rounded gap-2">
+          <div className="flex flex-col gap-2 rounded p-4">
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="relative">
-                <div className="z-10 flex w-full gap-4">
-                  <Avatar src={userImage ?? ""} alt="Me" />
+              <div className="relative grid grid-flow-row">
+                {/* Visible top part */}
+                <div className="grid auto-cols-max grid-flow-col grid-rows-2 place-content-center gap-x-4 pt-6 pl-4 pr-8 sm:auto-cols-auto sm:place-content-stretch">
+                  <Avatar
+                    src={userImage ?? ""}
+                    alt="Me"
+                    addStyles="col-start-1 col-end-2 place-self-end"
+                  />
+                  {/* Title field */}
                   <Input
                     type="text"
                     name="title"
                     register={register}
                     placeholder={isExpand ? "Title" : "Create Post"}
                     click={handleClickInside}
-                    addStyles="w-full"
+                    addStyles="col-start-2 col-end-11 outline-teal-500"
+                  />
+                  <div className="cold-end-13 col-start-11" />
+                  <ErrorMessage
+                    errors={errors}
+                    name="title"
+                    as="span"
+                    className="col-start-2 col-end-11 text-pink-400"
                   />
                 </div>
+
+                {/* Bottom part */}
                 <motion.div
-                  className="flex flex-col p-4"
+                  className="flex flex-col gap-4 rounded  bg-zinc-600/20 p-4 shadow shadow-purple-500"
                   initial={false}
                   variants={variants}
                   animate={isExpand ? "expand" : "shrink"}
@@ -141,19 +176,28 @@ const PostCreate = () => {
                     placeholder="Description (optional)"
                     label="Description"
                     register={register}
-                    addStyles="h-32 outline-purple-500"
+                    addStyles="h-32 outline-teal-500"
                   />
-                  <div className="mt-2 flex">
-                    <input
+                  <div className="mt-2 flex gap-2">
+                    <button
                       type="submit"
-                      value="Post"
-                      className="cursor-pointer rounded-full bg-zinc-200 py-2 px-4 transition hover:bg-zinc-300"
-                    />
+                      className="btn btn-tertiary btn-md rounded-full"
+                    >
+                      Post
+                    </button>
+                    <PillButton
+                      handleClick={handleClickDiscard}
+                      colorType="btn-primary"
+                      size="btn-md"
+                      type="button"
+                    >
+                      Cancel
+                    </PillButton>
                   </div>
                 </motion.div>
               </div>
             </form>
-          </Card>
+          </div>
         </div>
       </motion.div>
 
@@ -164,8 +208,9 @@ const PostCreate = () => {
         setIsOpen={setIsModalOpen}
         handleClick={handleClickDiscard}
         handleClickNo={handleClickCancel}
-        type="btn-secondary"
+        colorType="btn-secondary"
         size="btn-md"
+        type="button"
         buttonYes="Discard"
         buttonNo="Cancel"
       />
