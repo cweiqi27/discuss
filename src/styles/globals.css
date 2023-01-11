@@ -28,10 +28,10 @@
     @apply cursor-not-allowed bg-zinc-50/10 text-white opacity-50;
   }
   .btn-secondary {
-    @apply bg-rose-200 text-rose-700;
+    @apply bg-rose-500 text-rose-50;
   }
   .btn-secondary:hover {
-    @apply bg-rose-300;
+    @apply bg-rose-600;
   }
   .btn-secondary.btn-outline {
     @apply border border-rose-600 bg-transparent text-rose-600 hover:bg-rose-600 hover:text-white;
@@ -40,15 +40,15 @@
     @apply cursor-not-allowed bg-rose-500 text-white opacity-50;
   }
   .btn-tertiary {
-    @apply bg-slate-200 text-slate-700;
+    @apply bg-teal-500 text-teal-50;
   }
   .btn-tertiary:hover {
-    @apply bg-slate-300;
+    @apply bg-teal-600;
   }
   .btn-tertiary.btn-outline {
-    @apply border border-slate-600 bg-transparent text-slate-600 hover:bg-slate-600 hover:text-white;
+    @apply border border-teal-600 bg-transparent text-teal-600 hover:bg-teal-600 hover:text-white;
   }
   .btn-tertiary-disabled {
-    @apply cursor-not-allowed bg-slate-200 text-slate-700 opacity-50;
+    @apply cursor-not-allowed bg-teal-200 text-teal-700 opacity-50;
   }
 }
