@@ -1,6 +1,6 @@
 # Discuss
 
-A forum made for educations.
+A forum made for education.
 
 ## Tech Stack
 
