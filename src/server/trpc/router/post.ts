@@ -73,9 +73,9 @@ export const postRouter = router({
   createPost: protectedProcedure
     .input(
       z.object({
-        title: z.string(),
+        title: z.string().min(1),
         description: z.string().nullish(),
-        userId: z.string(),
+        userId: z.string().min(1),
         categoryId: z.number(),
       })
     )
