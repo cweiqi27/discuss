@@ -4,16 +4,14 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { trpc } from "utils/trpc";
 import Input from "components/form/Input";
-import Card from "components/layout/Card";
 import Textarea from "components/form/Textarea";
 import { useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import { motion, Variants } from "framer-motion";
 import useMeasure from "react-use-measure";
-import Avatar from "components/Avatar/Avatar";
+import Avatar from "components/avatar/Avatar";
 import ModalGeneric from "components/modal/ModalGeneric";
 import { useSession } from "next-auth/react";
-import SolidButton from "components/button/SolidButton";
 import PillButton from "components/button/PillButton";
 
 /*
@@ -129,11 +127,11 @@ const PostCreate = () => {
 
   return (
     <>
-      <motion.div
+      <motion.section
         ref={postCreateRef}
         animate={{ height }}
         transition={{ type: "spring", bounce: 0, duration: 0.7 }}
-        className="mb-2"
+        className="sticky mb-2"
       >
         <div ref={measureRef}>
           <div className="flex flex-col gap-2 rounded p-4">
@@ -144,6 +142,7 @@ const PostCreate = () => {
                   <Avatar
                     src={userImage ?? ""}
                     alt="Me"
+                    profileLink="/"
                     addStyles="col-start-1 col-end-2 place-self-end"
                   />
                   {/* Title field */}
@@ -199,7 +198,7 @@ const PostCreate = () => {
             </form>
           </div>
         </div>
-      </motion.div>
+      </motion.section>
 
       <ModalGeneric
         title="Discard post?"
