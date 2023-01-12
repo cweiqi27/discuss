@@ -35,7 +35,7 @@ export const postRouter = router({
     }),
 
   // Infinite scroll
-  getInfinitePost: publicProcedure
+  getPostInfinite: publicProcedure
     .input(
       z.object({
         limit: z.number().min(1).max(100).default(10),
@@ -49,6 +49,7 @@ export const postRouter = router({
         orderBy: {
           createdAt: "desc",
         },
+        cursor: cursor ? { id: cursor } : undefined,
         include: {
           user: {
             select: {
