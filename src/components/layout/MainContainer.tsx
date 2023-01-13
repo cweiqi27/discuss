@@ -4,9 +4,9 @@ type MainContainerProps = {
 
 const MainContainer = (props: MainContainerProps) => {
   return (
-    <main className="flex min-h-screen flex-col items-center gap-8 overflow-hidden bg-zinc-900">
+    <div className="grid grid-flow-row gap-2 overflow-clip bg-zinc-900">
       {props.children}
-    </main>
+    </div>
   );
 };
 

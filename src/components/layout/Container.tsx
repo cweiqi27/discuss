@@ -4,7 +4,13 @@ type ContainerProps = {
 };
 
 const Container = (props: ContainerProps) => {
-  return <div className="container mx-auto md:px-4">{props.children}</div>;
+  return (
+    <div className="mx-auto">
+      <main className="container grid grid-flow-col gap-x-4 md:px-4">
+        {props.children}
+      </main>
+    </div>
+  );
 };
 
 export default Container;
