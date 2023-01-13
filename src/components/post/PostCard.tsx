@@ -1,6 +1,5 @@
 import { IconMessage } from "@tabler/icons";
 import Avatar from "components/avatar/Avatar";
-import Card from "components/layout/Card";
 import Link from "next/link";
 import type { RouterOutputs } from "utils/trpc";
 import PostContent from "./PostContent";
