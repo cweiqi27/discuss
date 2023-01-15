@@ -1,8 +1,11 @@
 import SolidButton from "components/button/SolidButton";
 import type { ButtonProps, HandleClick, ModalProps } from "types/component";
+import { useModalStore } from "store/formStore";
 import Modal from "./Modal";
 
-type ModalGenericProps = ModalProps &
+type ModalPropsWithoutColor = Pick<ModalProps, "title" | "description">;
+
+type ModalGenericProps = ModalPropsWithoutColor &
   ButtonProps & {
     buttonYes: string;
     buttonNo: string;
@@ -12,8 +15,6 @@ type ModalGenericProps = ModalProps &
 const ModalGeneric = (props: ModalGenericProps) => {
   return (
     <Modal
-      isOpen={props.isOpen}
-      setIsOpen={props.setIsOpen}
       title={props.title}
       description={props.description}
       bgColor="bg-gradient-to-br from-zinc-600/80 to-zinc-600/50"

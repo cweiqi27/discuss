@@ -1,11 +1,15 @@
 import { Dialog } from "@headlessui/react";
 import type { ModalProps } from "types/component";
+import { useModalStore } from "store/postStore";
 
 const Modal = (props: ModalProps) => {
+  const modalIsOpen = useModalStore((state) => state.modalOpen);
+  const setModalClose = useModalStore((state) => state.updateModalOpenFalse);
+
   return (
     <Dialog
-      open={props.isOpen}
-      onClose={() => props.setIsOpen(false)}
+      open={modalIsOpen}
+      onClose={() => setModalClose}
       className="relative z-50"
     >
       <div className="fixed inset-0 flex items-center justify-center bg-zinc-900/70 p-4">
