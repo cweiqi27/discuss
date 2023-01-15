@@ -1,5 +1,3 @@
-import type { Dispatch, SetStateAction } from "react";
-
 // Reusable types for Button
 type ButtonColorType =
   | "btn-primary"
@@ -26,12 +24,10 @@ export type ButtonProps = {
 
 // Reusable types for Modal
 export type ModalProps = {
-  isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
   title: string;
   description: string;
-  bgColor?: string;
-  titleColor?: string;
-  descColor?: string;
-  children?: React.ReactNode;
+  bgColor: string;
+  titleColor: string;
+  descColor: string;
+  children: React.ReactNode;
 };
