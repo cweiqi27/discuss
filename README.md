@@ -11,3 +11,4 @@ A forum made for education.
 - [Framer Motion](https://github.com/framer/motion)
 - [react-use-measure](https://github.com/pmndrs/react-use-measure)
 - [date-fns](https://date-fns.org/)
+- [zustand](https://github.com/pmndrs/zustand)
