@@ -17,7 +17,6 @@ import UserAvatar from "components/avatar/UserAvatar";
 import type { FormSchemaType } from "types/form";
 import { FormSchema } from "types/form";
 import SolidButton from "components/button/SolidButton";
-import PostCreateForm from "../form/PostCreateForm";
 
 const PostCreate = () => {
   /*
