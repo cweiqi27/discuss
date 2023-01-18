@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider     = "mysql"
-  url          =  env("DATABASE_URL")
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
@@ -21,7 +21,7 @@ enum Gender {
 }
 
 enum VoteType {
-  UPVOTE 
+  UPVOTE
   DOWNVOTE
 }
 
@@ -90,7 +90,7 @@ model User {
   postUpvotes    PostVote[]
   comments       Comment[]
   commentUpvotes CommentVote[]
-  notification Notification[]
+  notification   Notification[]
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @default(now())
 
@@ -101,28 +101,28 @@ model Flair {
   id        Int         @id @default(autoincrement())
   flairName String      @unique
   posts     PostFlair[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @default(now())
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @default(now())
 }
 
 model Category {
-  id           Int    @id @default(autoincrement())
-  categoryName String @unique
+  id           Int      @id @default(autoincrement())
+  categoryName String   @unique
   posts        Post[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
 }
 
 model Post {
-  id          Int          @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   title       String
-  description String?      @db.Text
-  user        User         @relation(fields: [userId], references: [id], onDelete: NoAction)
+  description String?     @db.Text
+  user        User        @relation(fields: [userId], references: [id], onDelete: NoAction)
   userId      String
-  category    Category     @relation(fields: [categoryId], references: [id], onDelete: NoAction)
+  category    Category    @relation(fields: [categoryId], references: [id], onDelete: NoAction)
   categoryId  Int
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @default(now())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())
   flairs      PostFlair[]
   upvotes     PostVote[]
   comments    Comment[]
@@ -132,18 +132,18 @@ model Post {
 }
 
 model PostVote {
-  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId Int
-  voteType VoteType
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-  createdAt      DateTime        @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+  voteType  VoteType
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
   @@id([postId, userId])
   @@index([postId])
   @@index([userId])
-	@@map("PostUpvote")
+  @@map("PostUpvote")
 }
 
 model PostFlair {
@@ -158,18 +158,18 @@ model PostFlair {
 }
 
 model Comment {
-  id        Int             @id @default(autoincrement())
-  content   String          @db.Text
-  post      Post            @relation(fields: [postId], references: [id], onDelete: Cascade)
+  id        Int           @id @default(autoincrement())
+  content   String        @db.Text
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
-  user      User            @relation(fields: [userId], references: [id], onDelete: NoAction)
+  user      User          @relation(fields: [userId], references: [id], onDelete: NoAction)
   userId    String
-  parent    Comment?        @relation("ParentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parent    Comment?      @relation("ParentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   parentId  Int?
-  children  Comment[]       @relation("ParentChild")
+  children  Comment[]     @relation("ParentChild")
   upvotes   CommentVote[]
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @default(now())
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @default(now())
 
   @@index([postId])
   @@index([userId])
@@ -177,46 +177,47 @@ model Comment {
 }
 
 model CommentVote {
-  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId Int
-  voteType VoteType
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  voteType  VoteType
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  createdAt      DateTime        @default(now())
+  createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
   @@id([commentId, userId])
   @@index([commentId])
   @@index([userId])
-	@@map("CommentUpvote")
+  @@map("CommentUpvote")
 }
 
 model Notification {
-  id Int @id @default(autoincrement())
-  notificationObject NotificationObject @relation(fields: [notificationObjectId], references: [id], onDelete: Cascade)
+  id                   Int                 @id @default(autoincrement())
+  notificationObject   NotificationObject  @relation(fields: [notificationObjectId], references: [id], onDelete: Cascade)
   notificationObjectId Int
-  notificationActType NotificationActType
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
+  notificationActType  NotificationActType
+  user                 User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId               String
 
   @@index([notificationObjectId])
   @@index([userId])
 }
-model NotificationObject  {
-  id Int @id @default(autoincrement())
-  notificationType NotificationType @relation(fields:[notificationTypeId], references: [id], onDelete: Cascade)
+
+model NotificationObject {
+  id                 Int              @id @default(autoincrement())
+  notificationType   NotificationType @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
   notificationTypeId Int
-  notifications Notification[]
-  createdAt DateTime @default(now())
+  notifications      Notification[]
+  createdAt          DateTime         @default(now())
 
   @@index([notificationTypeId])
-	@@map("NotificationObject")
+  @@map("NotificationObject")
 }
 
 model NotificationType {
-  id Int @id @default(autoincrement())
-  description String @unique
-  notificationObjects NotificationObject[] 
+  id                  Int                  @id @default(autoincrement())
+  description         String               @unique
+  notificationObjects NotificationObject[]
 }
 
 model Course {
