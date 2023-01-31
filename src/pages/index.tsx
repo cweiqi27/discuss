@@ -8,53 +8,23 @@ import Pusher from "pusher-js";
 import PostCreate from "components/post/PostCreate";
 import PostList from "components/post/PostList";
 import StickyCard from "components/StickyCard";
+import StickyList from "components/StickyList";
 
-const Home: NextPage = () => {
+const Home: NextPage = (props) => {
+  const { data: userRole } = trpc.auth.getUserRole.useQuery();
   return (
-    <Layout>
+    <Layout type="timeline">
       {/* Left */}
       <section className="col-span-2">
         <PostCreate />
       </section>
-      <section className="flex flex-col items-center gap-2">
+      <section className="space-y-4">
         <PostList />
       </section>
       {/* Right */}
-      <section className="col-start-2 col-end-3 row-start-2 row-end-3 max-w-xs">
-        <div className="sticky top-0">
-          <div className="h-screen space-y-1 overflow-y-auto">
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-          </div>
-        </div>
+      <section className="col-start-2 col-end-3 row-start-2 row-end-3 sm:w-64 lg:w-80">
+        <p className="text-lg text-white">{userRole}</p>
+        <StickyList />
       </section>
     </Layout>
   );
