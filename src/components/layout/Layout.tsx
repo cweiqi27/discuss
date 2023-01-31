@@ -1,15 +1,24 @@
 import Head from "next/head";
 import Script from "next/script";
-import Container from "./Container";
+import TimelineContainer from "./TimelineContainer";
 import Header from "./Header";
 import MainContainer from "./MainContainer";
+import ProfileContainer from "./ProfileContainer";
+import SingleContainer from "./SingleContainer";
 
 type LayoutProps = {
-  isHome?: boolean;
+  type: "timeline" | "profile" | "single";
   children: React.ReactNode;
 };
 
+const componentLookup = {
+  timeline: TimelineContainer,
+  profile: ProfileContainer,
+  single: SingleContainer,
+} as const;
+
 const Layout = (props: LayoutProps) => {
+  const Container = componentLookup[props.type];
   return (
     <>
       {/* <Script src="https://js.pusher.com/7.2.0/pusher.min.js" /> */}

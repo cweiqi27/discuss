@@ -1,0 +1,16 @@
+type TimelineContainerProps = {
+  children: React.ReactNode;
+  addStyles?: string;
+};
+
+const TimelineContainer = (props: TimelineContainerProps) => {
+  return (
+    <div className="mx-auto">
+      <main className="container grid grid-flow-col gap-x-4 md:px-4">
+        {props.children}
+      </main>
+    </div>
+  );
+};
+
+export default TimelineContainer;
