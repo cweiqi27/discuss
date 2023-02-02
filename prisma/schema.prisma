@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["filteredRelationCount"]
 }
 
 datasource db {
@@ -124,7 +125,7 @@ model Post {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @default(now())
   flairs      PostFlair[]
-  upvotes     PostVote[]
+  votes       PostVote[]
   comments    Comment[]
 
   @@index([userId])
@@ -136,14 +137,13 @@ model PostVote {
   postId    Int
   voteType  VoteType
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
+  userId    String 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
   @@id([postId, userId])
   @@index([postId])
   @@index([userId])
-  @@map("PostUpvote")
 }
 
 model PostFlair {
@@ -167,7 +167,7 @@ model Comment {
   parent    Comment?      @relation("ParentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   parentId  Int?
   children  Comment[]     @relation("ParentChild")
-  upvotes   CommentVote[]
+  votes     CommentVote[]
   createdAt DateTime      @default(now())
   updatedAt DateTime      @default(now())
 
@@ -181,14 +181,13 @@ model CommentVote {
   commentId Int
   voteType  VoteType
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
+  userId    String 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
   @@id([commentId, userId])
   @@index([commentId])
   @@index([userId])
-  @@map("CommentUpvote")
 }
 
 model Notification {
