@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["filteredRelationCount"]
 }
 
@@ -115,18 +115,19 @@ model Category {
 }
 
 model Post {
-  id          Int         @id @default(autoincrement())
-  title       String
-  description String?     @db.Text
-  user        User        @relation(fields: [userId], references: [id], onDelete: NoAction)
-  userId      String
-  category    Category    @relation(fields: [categoryId], references: [id], onDelete: NoAction)
-  categoryId  Int
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now())
-  flairs      PostFlair[]
-  votes       PostVote[]
-  comments    Comment[]
+  id                  Int                  @id @default(autoincrement())
+  title               String
+  description         String?              @db.Text
+  user                User                 @relation(fields: [userId], references: [id], onDelete: NoAction)
+  userId              String
+  category            Category             @relation(fields: [categoryId], references: [id], onDelete: NoAction)
+  categoryId          Int
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @default(now())
+  flairs              PostFlair[]
+  votes               PostVote[]
+  comments            Comment[]
+  notificationObjects NotificationObject[]
 
   @@index([userId])
   @@index([categoryId])
@@ -137,7 +138,7 @@ model PostVote {
   postId    Int
   voteType  VoteType
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String 
+  userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
@@ -158,18 +159,18 @@ model PostFlair {
 }
 
 model Comment {
-  id        Int           @id @default(autoincrement())
-  content   String        @db.Text
-  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    Int
-  user      User          @relation(fields: [userId], references: [id], onDelete: NoAction)
-  userId    String
-  parent    Comment?      @relation("ParentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  parentId  Int?
-  children  Comment[]     @relation("ParentChild")
-  votes     CommentVote[]
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @default(now())
+  id                  Int                  @id @default(autoincrement())
+  content             String               @db.Text
+  post                Post                 @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId              Int
+  user                User                 @relation(fields: [userId], references: [id], onDelete: NoAction)
+  userId              String
+  parent              Comment?             @relation("ParentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentId            Int?
+  children            Comment[]            @relation("ParentChild")
+  votes               CommentVote[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @default(now())
 
   @@index([postId])
   @@index([userId])
@@ -181,7 +182,7 @@ model CommentVote {
   commentId Int
   voteType  VoteType
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String 
+  userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
@@ -207,9 +208,12 @@ model NotificationObject {
   notificationType   NotificationType @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
   notificationTypeId Int
   notifications      Notification[]
+  post               Post            @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId             Int
   createdAt          DateTime         @default(now())
 
   @@index([notificationTypeId])
+  @@index([postId])
   @@map("NotificationObject")
 }
 
