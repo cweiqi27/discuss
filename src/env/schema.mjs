@@ -28,6 +28,8 @@ export const serverSchema = z.object({
   PUSHER_APP_ID: z.string(),
   PUSHER_APP_SECRET: z.string(),
   PUSHER_APP_CLUSTER: z.string(),
+  // Algolia
+  ALGOLIA_ADMIN_KEY: z.string(),
 });
 
 /**
@@ -37,6 +39,9 @@ export const serverSchema = z.object({
  */
 export const clientSchema = z.object({
   NEXT_PUBLIC_PUSHER_APP_KEY: z.string(),
+  NEXT_PUBLIC_ALGOLIA_API_ID: z.string(),
+  NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_KEY: z.string(),
+  NEXT_PUBLIC_ALGOLIA_INDEX_NAME: z.string(),
 });
 
 /**
@@ -47,4 +52,8 @@ export const clientSchema = z.object({
  */
 export const clientEnv = {
   NEXT_PUBLIC_PUSHER_APP_KEY: process.env.NEXT_PUBLIC_PUSHER_APP_KEY,
+  NEXT_PUBLIC_ALGOLIA_API_ID: process.env.NEXT_PUBLIC_ALGOLIA_API_ID,
+  NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_KEY:
+    process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_KEY,
+  NEXT_PUBLIC_ALGOLIA_INDEX_NAME: process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME,
 };
