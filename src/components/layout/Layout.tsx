@@ -11,14 +11,14 @@ type LayoutProps = {
   children: React.ReactNode;
 };
 
-const componentLookup = {
+const containerLookup = {
   timeline: TimelineContainer,
   profile: ProfileContainer,
   single: SingleContainer,
 } as const;
 
 const Layout = (props: LayoutProps) => {
-  const Container = componentLookup[props.type];
+  const Container = containerLookup[props.type];
   return (
     <>
       {/* <Script src="https://js.pusher.com/7.2.0/pusher.min.js" /> */}
