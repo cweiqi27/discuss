@@ -1,18 +1,27 @@
 import { PrismaClient } from "@prisma/client";
-import { categories, notificationType } from "./data.mjs";
+import { categories, flairs, notificationType } from "./data.mjs";
 const prisma = new PrismaClient();
 
 const load = async () => {
   try {
     await prisma.category.deleteMany();
     await prisma.notificationType.deleteMany();
+    await prisma.notificationObject.deleteMany();
+    await prisma.flair.deleteMany();
     await prisma.$queryRaw`ALTER TABLE Category AUTO_INCREMENT = 1`;
     await prisma.$queryRaw`ALTER TABLE NotificationType AUTO_INCREMENT = 1`;
+    await prisma.$queryRaw`ALTER TABLE NotificationObject AUTO_INCREMENT = 1`;
+    await prisma.$queryRaw`ALTER TABLE NotificationInitiate AUTO_INCREMENT = 1`;
+    await prisma.$queryRaw`ALTER TABLE NotificationReceive AUTO_INCREMENT = 1`;
+    await prisma.$queryRaw`ALTER TABLE Flair AUTO_INCREMENT = 1`;
     await prisma.category.createMany({
       data: categories,
     });
     await prisma.notificationType.createMany({
       data: notificationType,
+    });
+    await prisma.flair.createMany({
+      data: flairs,
     });
   } catch (e) {
     console.error(e);

@@ -20,3 +20,18 @@ export const notificationType = [
     description: "User updates comment.",
   },
 ];
+
+export const flairs = [
+  {
+    flairName: "Academics",
+  },
+  {
+    flairName: "Fun",
+  },
+  {
+    flairName: "Co-curricular",
+  },
+  {
+    flairName: "Campus",
+  },
+];
