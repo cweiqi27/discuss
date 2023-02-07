@@ -26,11 +26,6 @@ enum VoteType {
   DOWNVOTE
 }
 
-enum NotificationActType {
-  INITIATE
-  RECEIVE
-}
-
 model Faculty {
   facultyId   Int         @id @default(autoincrement())
   facultyName String      @unique
@@ -69,31 +64,32 @@ model Session {
 }
 
 model User {
-  id             String          @id @default(cuid())
-  name           String?
-  role           Role            @default(USER)
-  active         Boolean         @default(true)
-  dateOfBirth    DateTime?
-  gender         Gender?
-  phoneNo        Int?            @unique
-  email          String?         @unique
-  emailVerified  DateTime?
-  password       String?
-  profileBio     String?         @db.Text
-  lastLogin      DateTime?
-  faculty        Faculty?        @relation(fields: [facultyId], references: [facultyId], onDelete: NoAction)
-  facultyId      Int?
-  image          String?
-  accounts       Account[]
-  sessions       Session[]
-  programmes     UserProgramme[]
-  posts          Post[]
-  postUpvotes    PostVote[]
-  comments       Comment[]
-  commentUpvotes CommentVote[]
-  notification   Notification[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @default(now())
+  id                   String                 @id @default(cuid())
+  name                 String?
+  role                 Role                   @default(USER)
+  active               Boolean                @default(true)
+  dateOfBirth          DateTime?
+  gender               Gender?
+  phoneNo              Int?                   @unique
+  email                String?                @unique
+  emailVerified        DateTime?
+  password             String?
+  profileBio           String?                @db.Text
+  lastLogin            DateTime?
+  faculty              Faculty?               @relation(fields: [facultyId], references: [facultyId], onDelete: NoAction)
+  facultyId            Int?
+  image                String?
+  accounts             Account[]
+  sessions             Session[]
+  programmes           UserProgramme[]
+  posts                Post[]
+  postUpvotes          PostVote[]
+  comments             Comment[]
+  commentUpvotes       CommentVote[]
+  notificationReceive  NotificationReceive[]
+  notificationInitiate NotificationInitiate[]
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @default(now())
 
   @@index([facultyId])
 }
@@ -159,18 +155,18 @@ model PostFlair {
 }
 
 model Comment {
-  id                  Int                  @id @default(autoincrement())
-  content             String               @db.Text
-  post                Post                 @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId              Int
-  user                User                 @relation(fields: [userId], references: [id], onDelete: NoAction)
-  userId              String
-  parent              Comment?             @relation("ParentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  parentId            Int?
-  children            Comment[]            @relation("ParentChild")
-  votes               CommentVote[]
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @default(now())
+  id        Int           @id @default(autoincrement())
+  content   String        @db.Text
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+  user      User          @relation(fields: [userId], references: [id], onDelete: NoAction)
+  userId    String
+  parent    Comment?      @relation("ParentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentId  Int?
+  children  Comment[]     @relation("ParentChild")
+  votes     CommentVote[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @default(now())
 
   @@index([postId])
   @@index([userId])
@@ -191,28 +187,39 @@ model CommentVote {
   @@index([userId])
 }
 
-model Notification {
-  id                   Int                 @id @default(autoincrement())
-  notificationObject   NotificationObject  @relation(fields: [notificationObjectId], references: [id], onDelete: Cascade)
+model NotificationReceive {
+  id                   Int                @id @default(autoincrement())
+  notificationObject   NotificationObject @relation(fields: [notificationObjectId], references: [id], onDelete: Cascade)
   notificationObjectId Int
-  notificationActType  NotificationActType
-  user                 User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId               String
 
   @@index([notificationObjectId])
   @@index([userId])
 }
 
+model NotificationInitiate {
+  id                 Int                 @id @default(autoincrement())
+  notificationObject NotificationObject?
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String
+
+  @@index([userId])
+}
+
 model NotificationObject {
-  id                 Int              @id @default(autoincrement())
-  notificationType   NotificationType @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
-  notificationTypeId Int
-  notifications      Notification[]
-  post               Post            @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId             Int
-  createdAt          DateTime         @default(now())
+  id                     Int                   @id @default(autoincrement())
+  notificationType       NotificationType      @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
+  notificationTypeId     Int
+  notificationsReceive   NotificationReceive[]
+  notificationInitiate   NotificationInitiate  @relation(fields: [notificationInitiateId], references: [id])
+  notificationInitiateId Int                   @unique
+  post                   Post                  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId                 Int
+  createdAt              DateTime              @default(now())
 
   @@index([notificationTypeId])
+  @@index([notificationInitiateId])
   @@index([postId])
   @@map("NotificationObject")
 }
