@@ -95,7 +95,7 @@ model User {
 }
 
 model Flair {
-  id        Int         @id @default(autoincrement())
+  id        String         @id @default(cuid())
   flairName String      @unique
   posts     PostFlair[]
   createdAt DateTime    @default(now())
@@ -103,7 +103,7 @@ model Flair {
 }
 
 model Category {
-  id           Int      @id @default(autoincrement())
+  id           String      @id @default(cuid())
   categoryName String   @unique
   posts        Post[]
   createdAt    DateTime @default(now())
@@ -111,13 +111,13 @@ model Category {
 }
 
 model Post {
-  id                  Int                  @id @default(autoincrement())
+  id                  String              @id @default(cuid())
   title               String
   description         String?              @db.Text
   user                User                 @relation(fields: [userId], references: [id], onDelete: NoAction)
   userId              String
   category            Category             @relation(fields: [categoryId], references: [id], onDelete: NoAction)
-  categoryId          Int
+  categoryId          String
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @default(now())
   flairs              PostFlair[]
@@ -131,7 +131,7 @@ model Post {
 
 model PostVote {
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    Int
+  postId    String
   voteType  VoteType
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
@@ -145,9 +145,9 @@ model PostVote {
 
 model PostFlair {
   post    Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId  Int
+  postId  String
   flair   Flair @relation(fields: [flairId], references: [id], onDelete: Cascade)
-  flairId Int
+  flairId String
 
   @@id([postId, flairId])
   @@index([postId])
@@ -155,14 +155,14 @@ model PostFlair {
 }
 
 model Comment {
-  id        Int           @id @default(autoincrement())
+  id        String           @id @default(cuid())
   content   String        @db.Text
   post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    Int
+  postId    String
   user      User          @relation(fields: [userId], references: [id], onDelete: NoAction)
   userId    String
   parent    Comment?      @relation("ParentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  parentId  Int?
+  parentId  String?
   children  Comment[]     @relation("ParentChild")
   votes     CommentVote[]
   createdAt DateTime      @default(now())
@@ -175,7 +175,7 @@ model Comment {
 
 model CommentVote {
   comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  commentId Int
+  commentId String
   voteType  VoteType
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
@@ -188,9 +188,9 @@ model CommentVote {
 }
 
 model NotificationReceive {
-  id                   Int                @id @default(autoincrement())
+  id                   String                @id @default(cuid())
   notificationObject   NotificationObject @relation(fields: [notificationObjectId], references: [id], onDelete: Cascade)
-  notificationObjectId Int
+  notificationObjectId String
   user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId               String
 
@@ -199,7 +199,7 @@ model NotificationReceive {
 }
 
 model NotificationInitiate {
-  id                 Int                 @id @default(autoincrement())
+  id                 String                 @id @default(cuid())
   notificationObject NotificationObject?
   user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId             String
@@ -208,14 +208,14 @@ model NotificationInitiate {
 }
 
 model NotificationObject {
-  id                     Int                   @id @default(autoincrement())
+  id                     String                   @id @default(cuid())
   notificationType       NotificationType      @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
   notificationTypeId     Int
   notificationsReceive   NotificationReceive[]
   notificationInitiate   NotificationInitiate  @relation(fields: [notificationInitiateId], references: [id])
-  notificationInitiateId Int                   @unique
+  notificationInitiateId String                   @unique
   post                   Post                  @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId                 Int
+  postId                 String
   createdAt              DateTime              @default(now())
 
   @@index([notificationTypeId])
