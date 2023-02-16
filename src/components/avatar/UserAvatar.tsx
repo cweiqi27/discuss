@@ -5,14 +5,14 @@ import Avatar from "./Avatar";
 const UserAvatar = () => {
   const { data: userImage } = trpc.auth.getUserImg.useQuery();
   return (
-    <>
+    <div className="flex gap-2">
       <Avatar
         src={userImage ?? ""}
         alt="Me"
         profileLink="/"
         addStyles="col-start-1 col-end-2 place-self-end"
       />
-    </>
+    </div>
   );
 };
 
