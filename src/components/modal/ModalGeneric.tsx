@@ -1,6 +1,6 @@
 import SolidButton from "components/button/SolidButton";
 import type { ButtonProps, HandleClick, ModalProps } from "types/component";
-import { useModalStore } from "store/postStore";
+import { useModalStore } from "store/postCreateStore";
 import Modal from "./Modal";
 
 type ModalPropsWithoutColor = Pick<ModalProps, "title" | "description">;

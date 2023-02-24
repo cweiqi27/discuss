@@ -1,30 +1,30 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  useScrollPositionDebounce,
-  useScrollPositionThrottle,
-} from "utils/hooks";
+import { useEffect, useState } from "react";
+import { useScrollPositionDebounce } from "utils/hooks";
 import { trpc } from "utils/trpc";
 import PostCard from "./PostCard";
 import PostLoadingSkeleton from "./PostLoadingSkeleton";
 
 type PostListProps = {
   children?: React.ReactNode;
+  categoryName: string;
 };
 
 const PostList = (props: PostListProps) => {
   const [scrollPosition, setScrollPosition] = useState<number>(0);
-  const viewportPosition = useRef({ x: 0, y: 0 });
 
   useScrollPositionDebounce(
     ({ currPos }) => {
       setScrollPosition(Math.abs(currPos.y) + window.innerHeight);
-      console.log(Math.abs(currPos.y) + window.innerHeight);
     },
     undefined,
     undefined,
     undefined,
     500
   );
+
+  const { data: category } = trpc.category.getCategoryByName.useQuery({
+    categoryName: props.categoryName,
+  });
 
   const {
     data,
@@ -33,12 +33,13 @@ const PostList = (props: PostListProps) => {
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
-  } = trpc.post.getPostInfinite.useInfiniteQuery(
+  } = trpc.post.getAllCursor.useInfiniteQuery(
     {
-      limit: 10,
+      limit: 5,
+      categoryId: category?.id ?? "",
     },
     {
-      getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   );
 

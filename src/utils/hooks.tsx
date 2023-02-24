@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { DependencyList, MutableRefObject } from "react";
+import { useEventListener } from "usehooks-ts";
 
 /**
  * Get scroll position on throttle (every changes)

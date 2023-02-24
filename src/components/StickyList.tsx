@@ -1,24 +1,51 @@
+import { motion } from "framer-motion";
 import React from "react";
+import { useHeaderStore } from "store/headerStore";
+import { useStickyStore } from "store/stickyStore";
+import { headerVariants, stickyVariants } from "utils/framer";
 import { trpc } from "utils/trpc";
+import NavBackToTop from "./NavBackToTop";
 import StickyCard from "./StickyCard";
+import StickyLoadingSkeleton from "./StickyLoadingSkeleton";
 
 type Props = {
   children?: React.ReactNode;
 };
 
 const StickyList = (props: Props) => {
-  const { data: sticky } = trpc.post.getSticky.useQuery();
+  /*
+   * Zustand stores
+   */
+  const isLiftSticky = useStickyStore((state) => state.liftSticky);
 
-  return (
-    <div className="sticky top-0">
-      <div className="h-screen space-y-2 overflow-y-auto">
+  const { data: sticky, isLoading, isError } = trpc.post.getSticky.useQuery();
+
+  return sticky?.length !== 0 ? (
+    <motion.div
+      className="sticky top-24 hidden lg:block"
+      initial="static"
+      variants={stickyVariants}
+      animate={isLiftSticky ? "enter" : "exit"}
+    >
+      <h2 className="bg-zinc-900 text-2xl font-bold text-zinc-200">STICKY</h2>
+      <div className="mb-6 h-[70vh] space-y-2 overflow-y-auto bg-zinc-900">
+        {isLoading && (
+          <>
+            <StickyLoadingSkeleton />
+            <StickyLoadingSkeleton />
+            <StickyLoadingSkeleton />
+          </>
+        )}
         {sticky?.map((sticky) => {
           return (
             <StickyCard key={sticky.id} text={sticky.title} color="purple" />
           );
         })}
       </div>
-    </div>
+      <NavBackToTop />
+    </motion.div>
+  ) : (
+    <></>
   );
 };
 

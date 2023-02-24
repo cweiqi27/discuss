@@ -1,6 +1,6 @@
 import { Dialog } from "@headlessui/react";
 import type { ModalProps } from "types/component";
-import { useModalStore } from "store/postStore";
+import { useModalStore } from "store/postCreateStore";
 
 const Modal = (props: ModalProps) => {
   const modalIsOpen = useModalStore((state) => state.modalOpen);
@@ -12,7 +12,7 @@ const Modal = (props: ModalProps) => {
       onClose={() => setModalClose}
       className="relative z-50"
     >
-      <div className="fixed inset-0 flex items-center justify-center bg-zinc-900/70 p-4">
+      <div className="fixed inset-0 grid place-items-center bg-zinc-900/70 p-4 backdrop-blur">
         <Dialog.Panel
           className={`w-full max-w-sm space-y-8 rounded p-6 ${props.bgColor}`}
         >

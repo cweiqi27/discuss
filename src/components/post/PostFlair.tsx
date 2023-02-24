@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { RouterOutputs } from "utils/trpc";
 
 type PostFlairProps = {
-  flair: RouterOutputs["post"]["getPostFlairs"]["flairs"][number];
+  flair: RouterOutputs["post"]["getFlairsByPost"]["flairs"][number];
   addStyles?: string;
 };
 

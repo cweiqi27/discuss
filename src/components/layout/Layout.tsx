@@ -7,14 +7,14 @@ import ProfileContainer from "./ProfileContainer";
 import SingleContainer from "./SingleContainer";
 
 type LayoutProps = {
-  type: "timeline" | "profile" | "single";
+  type: "TIMELINE" | "PROFILE" | "SINGLE";
   children: React.ReactNode;
 };
 
 const containerLookup = {
-  timeline: TimelineContainer,
-  profile: ProfileContainer,
-  single: SingleContainer,
+  TIMELINE: TimelineContainer,
+  PROFILE: ProfileContainer,
+  SINGLE: SingleContainer,
 } as const;
 
 const Layout = (props: LayoutProps) => {

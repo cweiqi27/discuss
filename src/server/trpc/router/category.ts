@@ -1,9 +1,8 @@
-import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { router, publicProcedure, protectedProcedure } from "../trpc";
 
 export const categoryRouter = router({
-  createRouter: publicProcedure
+  createCategory: protectedProcedure
     .input(z.object({ categoryName: z.string() }))
     .mutation(async ({ ctx, input }) => {
       try {
@@ -13,14 +12,19 @@ export const categoryRouter = router({
           },
         });
       } catch (e) {
-        if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          // The .code property can be accessed in a type-safe manner
-          if (e.code === "P2002") {
-            console.log(
-              "There is a unique constraint violation, a new user cannot be created with this email"
-            );
-          }
-        }
+        console.log(e);
       }
+    }),
+
+  getCategoryByName: publicProcedure
+    .input(z.object({ categoryName: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const category = await ctx.prisma.category.findUniqueOrThrow({
+        where: {
+          categoryName: input.categoryName,
+        },
+      });
+
+      return category;
     }),
 });

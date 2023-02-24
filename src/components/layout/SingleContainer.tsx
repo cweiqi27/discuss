@@ -4,7 +4,7 @@ type SingleContainerProps = {
 };
 
 const SingleContainer = (props: SingleContainerProps) => {
-  return <main className="grid place-items-center">{props.children}</main>;
+  return <div className="grid place-items-center">{props.children}</div>;
 };
 
 export default SingleContainer;

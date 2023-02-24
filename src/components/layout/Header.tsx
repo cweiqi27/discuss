@@ -1,48 +1,92 @@
-import { IconBell } from "@tabler/icons";
-import Auth from "components/Auth";
+import { IconBell } from "@tabler/icons-react";
+import AuthButton from "components/AuthButton";
 import LogoLink from "components/LogoLink";
-import NotificationMenu from "components/NotificationMenu";
+import NotificationPopover from "components/notification/NotificationPopover";
+import { motion, Variants } from "framer-motion";
 import Link from "next/link";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { useHeaderStore } from "store/headerStore";
+import { useStickyStore } from "store/stickyStore";
+import { headerVariants } from "utils/framer";
+import { useScrollPositionDebounce } from "utils/hooks";
+import { trpc } from "utils/trpc";
 
 const Header = () => {
-  const notifications = [
-    {
-      id: 1,
-      text: "test",
+  /**
+   * Zustand Stores
+   */
+  const isShowHeader = useHeaderStore((state) => state.showHeader);
+  const showHeaderTrue = useHeaderStore((state) => state.updateShowHeaderTrue);
+  const showHeaderFalse = useHeaderStore(
+    (state) => state.updateShowHeaderFalse
+  );
+  const liftStickyTrue = useStickyStore((state) => state.updateLiftStickyTrue);
+  const liftStickyFalse = useStickyStore(
+    (state) => state.updateLiftStickyFalse
+  );
+
+  const { data: userRole } = trpc.auth.getUserRole.useQuery();
+
+  const [scrollPosition, setScrollPosition] = useState<number>(0);
+  useScrollPositionDebounce(
+    ({ currPos }) => {
+      if (currPos.y < -350) {
+        if (currPos.y > scrollPosition) {
+          showHeaderTrue();
+          liftStickyFalse();
+        } else {
+          showHeaderFalse();
+          liftStickyTrue();
+        }
+      } else {
+        showHeaderTrue();
+        liftStickyFalse();
+      }
+      setScrollPosition(currPos.y);
+      console.log(isShowHeader);
     },
-    {
-      id: 1,
-      text: "abcd",
-    },
-    {
-      id: 1,
-      text: "abcd",
-    },
-    {
-      id: 1,
-      text: "abcd",
-    },
-  ];
+    undefined,
+    undefined,
+    undefined,
+    300
+  );
+
+  useEffect(() => {
+    return () => {
+      showHeaderTrue();
+    };
+  }, [showHeaderTrue]);
 
   return (
-    <nav className="z-50 flex w-full justify-between py-1 md:px-4">
-      <div className="flex gap-2">
-        <LogoLink />
-        {/* <Link href="/" className="self-center">
-          <h1
-            className="bg-clip-text align-bottom text-3xl font-extrabold
-            tracking-wide text-zinc-200 hover:bg-gradient-to-br hover:from-teal-500 hover:via-purple-500
+    <>
+      <motion.nav
+        variants={headerVariants}
+        animate={isShowHeader ? "enter" : "exit"}
+        className={`fixed top-0 z-50 flex h-20 w-full items-center justify-between
+          border-b-[0.05rem] border-zinc-800 bg-gradient-to-r from-zinc-900/20 to-zinc-900/40 pb-1 backdrop-blur md:px-4`}
+      >
+        <div className="flex gap-2">
+          <LogoLink />
+          {/* <Link href="/" className="self-center">
+            <h1
+              className="bg-clip-text align-bottom font-serif text-3xl font-extrabold lowercase text-zinc-200 hover:bg-gradient-to-br hover:from-teal-500 hover:via-purple-500
               hover:to-rose-500 hover:text-transparent"
-          >
-            Discuss
-          </h1>
-        </Link> */}
-      </div>
-      <div className="flex items-center gap-2">
-        <NotificationMenu notifcations={notifications} />
-        <Auth />
-      </div>
-    </nav>
+            >
+              {userRole}
+            </h1>
+          </Link> */}
+        </div>
+        {/* <div className="absolute -z-10 flex w-screen items-center justify-center ">
+        <div className="h-8 w-32 rounded-full bg-zinc-200 text-lg text-green-500">
+          TEST
+        </div>
+      </div> */}
+        <div className="flex items-center gap-2">
+          <NotificationPopover />
+          <AuthButton />
+        </div>
+      </motion.nav>
+    </>
   );
 };
 

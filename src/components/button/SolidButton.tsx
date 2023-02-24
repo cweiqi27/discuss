@@ -4,7 +4,9 @@ const SolidButton = (props: ButtonProps) => {
   return (
     <button
       onClick={(event) => props.handleClick(event, 1)}
-      className={`btn ${props.colorType} ${props.size} rounded-lg`}
+      className={`btn ${props.colorType} ${props.size} ${
+        props.rounded ? "rounded-lg" : ""
+      } ${props.active ? "btn-active" : ""} ${props.addStyles}`}
       type={props.type}
     >
       {props.children}

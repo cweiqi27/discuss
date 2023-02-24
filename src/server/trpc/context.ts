@@ -1,6 +1,7 @@
 import { type inferAsyncReturnType } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
+import { algoliaIndex } from "server/common/algolia";
 import { pusher } from "server/common/pusher";
 
 import { getServerAuthSession } from "../common/get-server-auth-session";
@@ -20,6 +21,7 @@ export const createContextInner = async (opts: CreateContextOptions) => {
     session: opts.session,
     prisma,
     pusher,
+    algolia: algoliaIndex,
   };
 };
 

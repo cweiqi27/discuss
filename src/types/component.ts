@@ -17,9 +17,12 @@ export type HandleClick = (
 export type ButtonProps = {
   handleClick: HandleClick;
   children?: React.ReactNode;
+  rounded?: boolean;
   colorType: ButtonColorType;
   size: ButtonSize;
   type: "button" | "submit" | "reset";
+  addStyles?: string;
+  active?: boolean;
 };
 
 // Reusable types for Modal
@@ -30,4 +33,11 @@ export type ModalProps = {
   titleColor: string;
   descColor: string;
   children: React.ReactNode;
+};
+
+// Toast types
+export type ToastProps = {
+  type: "ERROR" | "WARNING" | "SUCCESS" | "INFO";
+  message: string;
+  timer?: number;
 };

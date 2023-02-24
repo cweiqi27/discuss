@@ -1,30 +1,27 @@
 import { type NextPage } from "next";
-import { signIn, signOut, useSession } from "next-auth/react";
-
 import { trpc } from "../utils/trpc";
 import Layout from "components/layout/Layout";
 import { PusherProvider } from "utils/pusher";
 import Pusher from "pusher-js";
 import PostCreate from "components/post/PostCreate";
 import PostList from "components/post/PostList";
-import StickyCard from "components/StickyCard";
 import StickyList from "components/StickyList";
 
 const Home: NextPage = (props) => {
   const { data: userRole } = trpc.auth.getUserRole.useQuery();
   return (
-    <Layout type="timeline">
-      {/* Left */}
+    <Layout type="TIMELINE">
       <section className="col-span-2">
         <PostCreate />
       </section>
+      {/* Left */}
       <section className="space-y-4">
-        <PostList />
+        <PostList categoryName="announcement" />
       </section>
       {/* Right */}
-      <section className="col-start-2 col-end-3 row-start-2 row-end-3 sm:w-64 lg:w-80">
-        <p className="text-lg text-white">{userRole}</p>
+      <section className="col-start-2 col-end-3 row-start-2 row-end-3 max-w-xs lg:w-72">
         <StickyList />
+        {/* <AlgoliaShowcase /> */}
       </section>
     </Layout>
   );
@@ -46,3 +43,9 @@ const PusherShowcase: React.FC = () => {
 
   return <></>;
 };
+
+// const AlgoliaShowcase: React.FC = () => {
+//   trpc.algolia.pushIndex.useQuery();
+
+//   return <></>;
+// };
