@@ -54,8 +54,9 @@ const Header = () => {
   useEffect(() => {
     return () => {
       showHeaderTrue();
+      liftStickyFalse();
     };
-  }, [showHeaderTrue]);
+  }, [showHeaderTrue, liftStickyFalse]);
 
   return (
     <>
@@ -67,14 +68,6 @@ const Header = () => {
       >
         <div className="flex gap-2">
           <LogoLink />
-          {/* <Link href="/" className="self-center">
-            <h1
-              className="bg-clip-text align-bottom font-serif text-3xl font-extrabold lowercase text-zinc-200 hover:bg-gradient-to-br hover:from-teal-500 hover:via-purple-500
-              hover:to-rose-500 hover:text-transparent"
-            >
-              {userRole}
-            </h1>
-          </Link> */}
         </div>
         {/* <div className="absolute -z-10 flex w-screen items-center justify-center ">
         <div className="h-8 w-32 rounded-full bg-zinc-200 text-lg text-green-500">
