@@ -1,18 +1,12 @@
+import NavBackToTop from "components/NavBackToTop";
 import { motion } from "framer-motion";
-import React from "react";
-import { useHeaderStore } from "store/headerStore";
 import { useStickyStore } from "store/stickyStore";
-import { headerVariants, stickyVariants } from "utils/framer";
+import { stickyVariants } from "utils/framer";
 import { trpc } from "utils/trpc";
-import NavBackToTop from "./NavBackToTop";
 import StickyCard from "./StickyCard";
 import StickyLoadingSkeleton from "./StickyLoadingSkeleton";
 
-type Props = {
-  children?: React.ReactNode;
-};
-
-const StickyList = (props: Props) => {
+const StickyList = () => {
   /*
    * Zustand stores
    */
