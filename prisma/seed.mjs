@@ -8,12 +8,10 @@ const load = async () => {
     await prisma.notificationType.deleteMany();
     await prisma.notificationObject.deleteMany();
     await prisma.flair.deleteMany();
-    await prisma.$queryRaw`ALTER TABLE Category AUTO_INCREMENT = 1`;
     await prisma.$queryRaw`ALTER TABLE NotificationType AUTO_INCREMENT = 1`;
     await prisma.$queryRaw`ALTER TABLE NotificationObject AUTO_INCREMENT = 1`;
     await prisma.$queryRaw`ALTER TABLE NotificationInitiate AUTO_INCREMENT = 1`;
     await prisma.$queryRaw`ALTER TABLE NotificationReceive AUTO_INCREMENT = 1`;
-    await prisma.$queryRaw`ALTER TABLE Flair AUTO_INCREMENT = 1`;
     await prisma.category.createMany({
       data: categories,
     });
