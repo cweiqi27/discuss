@@ -26,6 +26,13 @@ enum VoteType {
   DOWNVOTE
 }
 
+enum Status {
+  PRESENT
+  REMOVED_BY_USER
+  REMOVED_BY_MODERATOR
+  REMOVED_BY_ADMIN
+}
+
 model Faculty {
   facultyId   Int         @id @default(autoincrement())
   facultyName String      @unique
@@ -112,6 +119,7 @@ model Category {
 
 model Post {
   id                  String               @id @default(cuid())
+  status              Status               @default(PRESENT)
   title               String
   description         String?              @db.Text
   user                User                 @relation(fields: [userId], references: [id], onDelete: NoAction)
@@ -156,6 +164,7 @@ model PostFlair {
 
 model Comment {
   id        String        @id @default(cuid())
+  status    Status        @default(PRESENT)
   content   String        @db.Text
   post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String
