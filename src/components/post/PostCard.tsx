@@ -2,6 +2,7 @@ import { Menu } from "@headlessui/react";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import Avatar from "components/avatar/Avatar";
 import CommentButton from "components/comment/CommentButton";
+import Delete from "components/Delete";
 import DotsMenu from "components/DotsMenu";
 import {
   differenceInDays,
@@ -11,127 +12,124 @@ import {
   isThisYear,
 } from "date-fns";
 import Link from "next/link";
+import { useMemo } from "react";
 import type { RouterOutputs } from "utils/trpc";
 import { trpc } from "utils/trpc";
 import PostContent from "./PostContent";
 import PostFlairList from "./PostFlairList";
-import PostLoadingSkeleton from "./PostLoadingSkeleton";
 import PostTitle from "./PostTitle";
 import Vote from "./Vote";
 
 type PostCardProps = {
-  post: RouterOutputs["post"]["getAllCursor"]["posts"][number];
-  isLoading?: boolean;
+  post: RouterOutputs["post"]["getByCategoryCursor"]["posts"][number];
 };
 
-const PostCard = ({ post, isLoading }: PostCardProps) => {
+const PostCard = ({ post }: PostCardProps) => {
   const { data: userRole } = trpc.auth.getUserRole.useQuery();
   const { data: userId } = trpc.auth.getUserId.useQuery();
 
-  const postDate =
-    differenceInDays(Date.now(), post.createdAt) < 2
+  const { data: discussion } = trpc.category.getByName.useQuery({
+    name: "discussion",
+  });
+
+  const formatPostDate = () => {
+    return differenceInDays(Date.now(), post.createdAt) < 2
       ? formatDistanceToNow(post.createdAt)
       : isThisYear(post.createdAt)
       ? format(post.createdAt, "MMM do")
       : format(post.createdAt, "yyyy MMM dd");
-
-  const editedDate = formatDistanceToNow(post.updatedAt);
-
-  const utils = trpc.useContext();
-  const postDelete = trpc.post.deleteBySessionUser.useMutation({
-    onSuccess() {
-      utils.post.getAllCursor.invalidate();
-    },
-  });
-  const handleClickDelete = () => {
-    postDelete.mutate({ postId: post.id, userId: post.userId });
   };
+
+  const formattedPostDate = useMemo(formatPostDate, [post.createdAt]);
+
+  const editedDate = useMemo(() => {
+    return formatDistanceToNow(post.updatedAt);
+  }, [post.updatedAt]);
 
   return (
     <>
-      {isLoading ? (
-        <PostLoadingSkeleton />
-      ) : (
-        <div
-          className="container flex flex-col gap-6 rounded
+      <div
+        className="container flex flex-col gap-6 rounded
           border-[0.25px] border-zinc-200/40 bg-gradient-to-br from-zinc-400/5 to-zinc-400/10 p-2 shadow
         hover:border-fuchsia-500 sm:grid sm:w-[36rem] sm:grid-flow-col sm:grid-cols-[auto_1fr] sm:p-4"
-        >
-          {/* Left */}
-          <Avatar
-            size="md"
-            src={post.user.image ?? ""}
-            alt={post.user.name ?? ""}
-            profileSlug={post.user.id ?? ""}
-            addStyles="hidden place-self-center sm:block"
-          />
+      >
+        {/* Left */}
+        <Avatar
+          size="md"
+          src={post.user.image ?? ""}
+          alt={post.user.name ?? ""}
+          profileSlug={post.user.id ?? ""}
+          addStyles="hidden place-self-center sm:block"
+        />
+        {post.categoryId === discussion?.id && (
           <div className="row-start-2 row-end-4 hidden place-self-center sm:block">
             <Vote postId={post.id} type="post" />
           </div>
-          {/* Right */}
-          <div className="flex w-full min-w-0 justify-between sm:col-start-2 sm:gap-0 sm:place-self-start">
-            <div className="flex items-start gap-4 sm:gap-0">
-              <Avatar
-                size="md"
-                src={post.user.image ?? ""}
-                alt={post.user.name ?? ""}
-                profileSlug={post.user.id ?? ""}
-                addStyles="block sm:hidden"
-              />
-              <div className="flex flex-col overflow-x-auto">
-                {/* Name */}
-                <span className="cursor-default font-semibold leading-5 text-zinc-200">
-                  {post.user.name}
-                </span>
-                {/* Date */}
-                <span className="flex cursor-default gap-1 text-xs text-zinc-300">
-                  {postDate}
-                  {!isEqual(post.createdAt, post.updatedAt) && (
-                    <>
-                      {/* <div className="group flex"> */}
-                      <span className="group inline-flex hover:underline">
-                        (edited
-                        <span className="hidden group-hover:block group-hover:underline">
-                          : {editedDate}
-                        </span>
-                        )
-                      </span>
-                      {/* </div> */}
-                    </>
-                  )}
-                </span>
-                <PostFlairList postId={post.id} />
+        )}
+        {/* Right */}
+        <div className="flex w-full min-w-0 justify-between sm:col-start-2 sm:gap-0 sm:place-self-start">
+          <div className="flex items-start gap-4 sm:gap-0">
+            <Avatar
+              size="md"
+              src={post.user.image ?? ""}
+              alt={post.user.name ?? ""}
+              profileSlug={post.user.id ?? ""}
+              addStyles="block sm:hidden"
+            />
+            <div className="flex flex-col overflow-x-auto">
+              {/* Name */}
+              <span className="cursor-default font-semibold leading-5 text-zinc-200">
+                {post.user.name}
+              </span>
+              {/* Date */}
+              <div className="flex cursor-default gap-1 text-xs text-zinc-300">
+                {formattedPostDate}
+                {!isEqual(post.createdAt, post.updatedAt) && (
+                  <>
+                    <div className="group inline-flex hover:underline">
+                      (edited
+                      <div className="hidden group-hover:block group-hover:underline">
+                        : {editedDate}
+                      </div>
+                      )
+                    </div>
+                  </>
+                )}
               </div>
+              <PostFlairList postId={post.id} />
             </div>
+          </div>
 
-            {/* Dots menu */}
+          {/* Dots menu */}
+          {(post.userId === userId ||
+            userRole === "MOD" ||
+            userRole === "ADMIN") && (
             <DotsMenu>
-              <Menu.Item as="span">
+              <Menu.Item as="div">
                 {post.userId === userId && (
-                  <button
-                    type="button"
+                  <Link
+                    href={`posts/${post.id}`}
                     className="flex w-full items-center justify-start gap-2 rounded px-2 py-1 text-zinc-400 hover:bg-zinc-600 hover:text-zinc-100"
                   >
                     <IconPencil />
                     <span className="text-sm">Edit</span>
-                  </button>
+                  </Link>
                 )}
               </Menu.Item>
-              <Menu.Item as="span">
+              <Menu.Item as="div">
                 {(userRole === "MOD" ||
                   userRole === "ADMIN" ||
                   post.userId === userId) && (
-                  <button
-                    type="button"
-                    onClick={handleClickDelete}
+                  <Link
+                    href={`posts/${post.id}`}
                     className="flex w-full items-center justify-start gap-2 rounded px-2 py-1 text-zinc-400 hover:bg-zinc-600 hover:text-zinc-100"
                   >
                     <IconTrash />
                     <span className="text-sm">Delete</span>
-                  </button>
+                  </Link>
                 )}
               </Menu.Item>
-              <Menu.Item as="span">
+              <Menu.Item as="div">
                 {post.userId !== userId && userRole === "USER" && (
                   <button
                     type="button"
@@ -143,25 +141,27 @@ const PostCard = ({ post, isLoading }: PostCardProps) => {
                 )}
               </Menu.Item>
             </DotsMenu>
-          </div>
+          )}
+        </div>
 
-          {/* Title and Description */}
-          <Link
-            href={`/posts/${post.id}`}
-            className="flex flex-col gap-2 overflow-hidden rounded p-2 hover:bg-zinc-600/20
+        {/* Title and Description */}
+        <Link
+          href={`/posts/${post.id}`}
+          className="flex flex-col gap-2 overflow-hidden rounded p-2 hover:bg-zinc-600/20
             sm:col-start-2 sm:row-start-2 sm:row-end-3 "
-          >
-            <span className="max-w-[1rem] sm:max-w-none">
-              <PostTitle title={post.title} />
-            </span>
-            <PostContent description={post.description} />
-          </Link>
+        >
+          <div className="max-w-[1rem] sm:max-w-none">
+            <PostTitle title={post.title} />
+          </div>
+          <PostContent description={post.description} />
+        </Link>
 
-          {/* Bottom row */}
+        {/* Bottom row */}
+        {post.categoryId === discussion?.id && (
           <div className="col-start-2 row-start-3 flex justify-evenly">
-            <span className="px-3 py-1 align-middle sm:hidden">
+            <div className="px-3 py-1 align-middle sm:hidden">
               <Vote postId={post.id} type="post" isFlexRow />
-            </span>
+            </div>
             <Link
               href={`/posts/${post.id}`}
               className="rounded-full px-3 py-1 text-zinc-400 hover:bg-zinc-600/20 hover:text-zinc-100"
@@ -169,8 +169,8 @@ const PostCard = ({ post, isLoading }: PostCardProps) => {
               <CommentButton postId={post.id} />
             </Link>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </>
   );
 };

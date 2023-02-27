@@ -22,8 +22,8 @@ const PostList = (props: PostListProps) => {
     500
   );
 
-  const { data: category } = trpc.category.getCategoryByName.useQuery({
-    categoryName: props.categoryName,
+  const { data: category } = trpc.category.getByName.useQuery({
+    name: props.categoryName,
   });
 
   const {
@@ -33,7 +33,7 @@ const PostList = (props: PostListProps) => {
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
-  } = trpc.post.getAllCursor.useInfiniteQuery(
+  } = trpc.post.getByCategoryCursor.useInfiniteQuery(
     {
       limit: 5,
       categoryId: category?.id ?? "",
@@ -75,7 +75,12 @@ const PostList = (props: PostListProps) => {
 
       {isFetching && <PostLoadingSkeleton />}
 
-      {!hasNextPage && <div>You reached the end of the page.</div>}
+      {!hasNextPage && (
+        <div className="text-zinc-400">
+          You&apos;ve reached the world&apos;s edge, none but devils play past
+          here.
+        </div>
+      )}
     </>
   );
 };

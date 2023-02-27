@@ -3,7 +3,11 @@ type PostTitleProps = {
 };
 
 const PostTitle = (props: PostTitleProps) => {
-  return <h3 className="text-2xl font-bold text-zinc-200">{props.title}</h3>;
+  return (
+    <p className="text-2xl font-bold text-zinc-200 sm:truncate">
+      {props.title}
+    </p>
+  );
 };
 
 export default PostTitle;

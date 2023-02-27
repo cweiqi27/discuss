@@ -61,20 +61,18 @@ const PostCreate = () => {
    * Create post and hook form
    */
   const utils = trpc.useContext();
-  const { data: discussion } = trpc.category.getCategoryByName.useQuery({
-    categoryName: "discussion",
+  const { data: discussion } = trpc.category.getByName.useQuery({
+    name: "discussion",
   });
-  const { data: announcement } = trpc.category.getCategoryByName.useQuery({
-    categoryName: "announcement",
+  const { data: announcement } = trpc.category.getByName.useQuery({
+    name: "announcement",
   });
-  const { data: stickyAnnouncement } = trpc.category.getCategoryByName.useQuery(
-    {
-      categoryName: "sticky",
-    }
-  );
+  const { data: stickyAnnouncement } = trpc.category.getByName.useQuery({
+    name: "sticky",
+  });
   const createPost = trpc.post.create.useMutation({
     onSuccess() {
-      utils.post.getAllCursor.invalidate();
+      utils.post.getByCategoryCursor.invalidate();
       utils.post.getSticky.invalidate();
       reset();
       setShrink();
@@ -138,9 +136,10 @@ const PostCreate = () => {
   const isAdminOrMod = userRole === "ADMIN" || userRole === "MOD";
 
   /*
-   * The component should expand when clicked, and will ask if user wants to
-   * discard the input fields if click anywhere outside of the component,
-   * and shrink if yes
+   * The component should:
+   * - expand when clicked
+   * - ask if user wants to discard the input fields if click
+   *   anywhere outside of the component, shrink if yes
    */
   const [measureRef, { height }] = useMeasure();
   const postCreateRef = useRef<HTMLDivElement>(null);

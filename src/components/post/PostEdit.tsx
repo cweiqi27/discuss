@@ -11,7 +11,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import useMeasure from "react-use-measure";
 import { usePostEditStore } from "store/postStaticStore";
-import { EditPostFormSchema } from "types/form";
+import { EditPostFormSchema, EditPostFormSchemaType } from "types/form";
 import { useEffectOnce } from "usehooks-ts";
 import { editVariants } from "utils/framer";
 import type { RouterOutputs } from "utils/trpc";
@@ -75,8 +75,8 @@ const PostEdit = ({ post }: PostEditProps) => {
   };
 
   const onSubmit = async () => {
-    const title: EditPostFormSchema["title"] = getValues("title");
-    const description: EditPostFormSchema["description"] =
+    const title: EditPostFormSchemaType["title"] = getValues("title");
+    const description: EditPostFormSchemaType["description"] =
       getValues("description");
 
     if (!isDirty && selectedFlair === originalSelectedFlairArr) {
