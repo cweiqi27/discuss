@@ -12,6 +12,13 @@
     "seed": "node prisma/seed.mjs"
   },
   "dependencies": {
+    "@algolia/autocomplete-core": "^1.8.2",
+    "@algolia/autocomplete-js": "^1.8.2",
+    "@algolia/autocomplete-plugin-query-suggestions": "^1.8.2",
+    "@algolia/autocomplete-plugin-recent-searches": "^1.8.2",
+    "@algolia/autocomplete-shared": "^1.8.2",
+    "@algolia/autocomplete-theme-classic": "^1.8.2",
+    "@algolia/client-search": "^4.14.3",
     "@headlessui/react": "^1.7.10",
     "@headlessui/tailwindcss": "^0.1.2",
     "@hookform/error-message": "^2.0.1",
@@ -22,6 +29,7 @@
     "@tabler/icons-react": "^2.3.0",
     "@tanstack/react-query": "^4.24.6",
     "@tanstack/react-query-devtools": "^4.24.6",
+    "@total-typescript/ts-reset": "^0.3.7",
     "@trpc/client": "^10.11.0",
     "@trpc/next": "^10.11.0",
     "@trpc/react-query": "^10.11.0",
