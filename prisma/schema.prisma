@@ -93,6 +93,7 @@ model User {
   postUpvotes          PostVote[]
   comments             Comment[]
   commentUpvotes       CommentVote[]
+  newNotificationCount Int                    @default(0)
   notificationReceive  NotificationReceive[]
   notificationInitiate NotificationInitiate[]
   createdAt            DateTime               @default(now())
