@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["filteredRelationCount"]
 }
 
 datasource db {
@@ -25,9 +26,11 @@ enum VoteType {
   DOWNVOTE
 }
 
-enum NotificationActType {
-  INITIATE
-  RECEIVE
+enum Status {
+  PRESENT
+  REMOVED_BY_USER
+  REMOVED_BY_MODERATOR
+  REMOVED_BY_ADMIN
 }
 
 model Faculty {
@@ -68,37 +71,39 @@ model Session {
 }
 
 model User {
-  id             String          @id @default(cuid())
-  name           String?
-  role           Role            @default(USER)
-  active         Boolean         @default(true)
-  dateOfBirth    DateTime?
-  gender         Gender?
-  phoneNo        Int?            @unique
-  email          String?         @unique
-  emailVerified  DateTime?
-  password       String?
-  profileBio     String?         @db.Text
-  lastLogin      DateTime?
-  faculty        Faculty?        @relation(fields: [facultyId], references: [facultyId], onDelete: NoAction)
-  facultyId      Int?
-  image          String?
-  accounts       Account[]
-  sessions       Session[]
-  programmes     UserProgramme[]
-  posts          Post[]
-  postUpvotes    PostVote[]
-  comments       Comment[]
-  commentUpvotes CommentVote[]
-  notification   Notification[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @default(now())
+  id                   String                 @id @default(cuid())
+  name                 String?
+  role                 Role                   @default(USER)
+  active               Boolean                @default(true)
+  dateOfBirth          DateTime?
+  gender               Gender?
+  phoneNo              Int?                   @unique
+  email                String?                @unique
+  emailVerified        DateTime?
+  password             String?
+  profileBio           String?                @db.Text
+  lastLogin            DateTime?
+  faculty              Faculty?               @relation(fields: [facultyId], references: [facultyId], onDelete: NoAction)
+  facultyId            Int?
+  image                String?
+  accounts             Account[]
+  sessions             Session[]
+  programmes           UserProgramme[]
+  posts                Post[]
+  postUpvotes          PostVote[]
+  comments             Comment[]
+  commentUpvotes       CommentVote[]
+  newNotificationCount Int                    @default(0)
+  notificationReceive  NotificationReceive[]
+  notificationInitiate NotificationInitiate[]
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @default(now())
 
   @@index([facultyId])
 }
 
 model Flair {
-  id        Int         @id @default(autoincrement())
+  id        String      @id @default(cuid())
   flairName String      @unique
   posts     PostFlair[]
   createdAt DateTime    @default(now())
@@ -106,7 +111,7 @@ model Flair {
 }
 
 model Category {
-  id           Int      @id @default(autoincrement())
+  id           String   @id @default(cuid())
   categoryName String   @unique
   posts        Post[]
   createdAt    DateTime @default(now())
@@ -114,18 +119,20 @@ model Category {
 }
 
 model Post {
-  id          Int         @id @default(autoincrement())
-  title       String
-  description String?     @db.Text
-  user        User        @relation(fields: [userId], references: [id], onDelete: NoAction)
-  userId      String
-  category    Category    @relation(fields: [categoryId], references: [id], onDelete: NoAction)
-  categoryId  Int
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now())
-  flairs      PostFlair[]
-  upvotes     PostVote[]
-  comments    Comment[]
+  id                  String               @id @default(cuid())
+  status              Status               @default(PRESENT)
+  title               String
+  description         String?              @db.Text
+  user                User                 @relation(fields: [userId], references: [id], onDelete: NoAction)
+  userId              String
+  category            Category             @relation(fields: [categoryId], references: [id], onDelete: NoAction)
+  categoryId          String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @default(now())
+  flairs              PostFlair[]
+  votes               PostVote[]
+  comments            Comment[]
+  notificationObjects NotificationObject[]
 
   @@index([userId])
   @@index([categoryId])
@@ -133,7 +140,7 @@ model Post {
 
 model PostVote {
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    Int
+  postId    String
   voteType  VoteType
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
@@ -143,14 +150,13 @@ model PostVote {
   @@id([postId, userId])
   @@index([postId])
   @@index([userId])
-  @@map("PostUpvote")
 }
 
 model PostFlair {
-  post    Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId  Int
-  flair   Flair @relation(fields: [flairId], references: [id], onDelete: Cascade)
-  flairId Int
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId  String
+  flair   Flair  @relation(fields: [flairId], references: [id], onDelete: Cascade)
+  flairId String
 
   @@id([postId, flairId])
   @@index([postId])
@@ -158,16 +164,17 @@ model PostFlair {
 }
 
 model Comment {
-  id        Int           @id @default(autoincrement())
+  id        String        @id @default(cuid())
+  status    Status        @default(PRESENT)
   content   String        @db.Text
-  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    Int
+  post      Post          @relation(fields: [postId], references: [id], onDelete: NoAction)
+  postId    String
   user      User          @relation(fields: [userId], references: [id], onDelete: NoAction)
   userId    String
   parent    Comment?      @relation("ParentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  parentId  Int?
+  parentId  String?
   children  Comment[]     @relation("ParentChild")
-  upvotes   CommentVote[]
+  votes     CommentVote[]
   createdAt DateTime      @default(now())
   updatedAt DateTime      @default(now())
 
@@ -178,7 +185,7 @@ model Comment {
 
 model CommentVote {
   comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  commentId Int
+  commentId String
   voteType  VoteType
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
@@ -188,29 +195,42 @@ model CommentVote {
   @@id([commentId, userId])
   @@index([commentId])
   @@index([userId])
-  @@map("CommentUpvote")
 }
 
-model Notification {
-  id                   Int                 @id @default(autoincrement())
-  notificationObject   NotificationObject  @relation(fields: [notificationObjectId], references: [id], onDelete: Cascade)
-  notificationObjectId Int
-  notificationActType  NotificationActType
-  user                 User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+model NotificationReceive {
+  id                   String             @id @default(cuid())
+  notificationObject   NotificationObject @relation(fields: [notificationObjectId], references: [id], onDelete: Cascade)
+  notificationObjectId String
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId               String
 
   @@index([notificationObjectId])
   @@index([userId])
 }
 
+model NotificationInitiate {
+  id                 String              @id @default(cuid())
+  notificationObject NotificationObject?
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String
+
+  @@index([userId])
+}
+
 model NotificationObject {
-  id                 Int              @id @default(autoincrement())
-  notificationType   NotificationType @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
-  notificationTypeId Int
-  notifications      Notification[]
-  createdAt          DateTime         @default(now())
+  id                     String                @id @default(cuid())
+  notificationType       NotificationType      @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
+  notificationTypeId     Int
+  notificationsReceive   NotificationReceive[]
+  notificationInitiate   NotificationInitiate  @relation(fields: [notificationInitiateId], references: [id])
+  notificationInitiateId String                @unique
+  post                   Post                  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId                 String
+  createdAt              DateTime              @default(now())
 
   @@index([notificationTypeId])
+  @@index([notificationInitiateId])
+  @@index([postId])
   @@map("NotificationObject")
 }
 

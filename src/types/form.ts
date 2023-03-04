@@ -1,24 +1,33 @@
 import { z } from "zod";
 
 // Schema
-export const FormSchema = z.object({
+export const CreatePostFormSchema = z.object({
   title: z.string().min(1, { message: "Title is required." }),
   description: z.string().nullish(),
   sticky: z.boolean().nullish(),
 });
 
-export type FormSchemaType = z.infer<typeof FormSchema>;
+export type CreatePostFormSchemaType = z.infer<typeof CreatePostFormSchema>;
 
-// Discussion form type
-type PostFormType = {
-  title: string;
-  description?: string;
-};
+export const EditPostFormSchema = z.object({
+  title: z.string().min(1, { message: "Title is required." }),
+  description: z.string().nullish(),
+});
 
-type DiscussionFormType = PostFormType & {
-  flair?: number[];
-};
+export type EditPostFormSchemaType = z.infer<typeof EditPostFormSchema>;
 
-type AnnouncementFormType = PostFormType & {
-  isSticky?: boolean;
-};
+export const CreateCommentFormSchema = z.object({
+  content: z.string().min(1, { message: "Content is required." }),
+});
+
+export type CreateCommentFormSchemaType = z.infer<
+  typeof CreateCommentFormSchema
+>;
+
+export const EditProfileBioFormSchema = z.object({
+  bio: z.string().min(1, { message: "Bio is required." }),
+});
+
+export type EditProfileBioFormSchemaType = z.infer<
+  typeof EditProfileBioFormSchema
+>;

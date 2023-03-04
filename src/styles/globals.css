@@ -38,13 +38,16 @@
     @apply px-8 py-4 text-lg;
   }
   .btn-primary {
-    @apply bg-zinc-50/10 text-white;
+    @apply bg-zinc-50/10 text-zinc-300;
   }
   .btn-primary:hover {
-    @apply bg-zinc-50/20;
+    @apply bg-zinc-50/20 text-zinc-100;
+  }
+  .btn-primary.btn-active {
+    @apply bg-zinc-50/30 text-white;
   }
   .btn-primary.btn-outline {
-    @apply border border-zinc-600 bg-transparent text-zinc-600 hover:bg-zinc-600 hover:text-white;
+    @apply border border-zinc-600 bg-transparent text-zinc-600 hover:bg-zinc-600 hover:text-zinc-300;
   }
   .btn-primary-disabled {
     @apply cursor-not-allowed bg-zinc-50/10 text-white opacity-50;
@@ -53,6 +56,9 @@
     @apply bg-rose-500 text-rose-50;
   }
   .btn-secondary:hover {
+    @apply bg-rose-600;
+  }
+  .btn-secondary.btn-active {
     @apply bg-rose-600;
   }
   .btn-secondary.btn-outline {
@@ -65,6 +71,9 @@
     @apply bg-teal-500 text-teal-50;
   }
   .btn-tertiary:hover {
+    @apply bg-teal-600;
+  }
+  .btn-tertiary.btn-active {
     @apply bg-teal-600;
   }
   .btn-tertiary.btn-outline {

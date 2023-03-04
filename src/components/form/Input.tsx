@@ -8,6 +8,7 @@ type InputProps = {
   register: UseFormRegister<FieldValues>;
   addStyles?: string;
   click?: () => void;
+  value?: string;
 };
 const inputStyles = "rounded p-2 bg-zinc-400/40 text-zinc-200";
 
@@ -21,6 +22,7 @@ const Input = (props: InputProps) => {
         placeholder={props.placeholder}
         {...props.register(props.name)}
         onClick={props.click}
+        defaultValue={props.value}
       />
     </>
   );

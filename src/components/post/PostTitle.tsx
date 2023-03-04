@@ -4,9 +4,9 @@ type PostTitleProps = {
 
 const PostTitle = (props: PostTitleProps) => {
   return (
-    <h3 className="text-left text-2xl font-bold text-zinc-200">
+    <p className="text-2xl font-bold text-zinc-200 sm:truncate">
       {props.title}
-    </h3>
+    </p>
   );
 };
 

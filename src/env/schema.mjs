@@ -25,9 +25,9 @@ export const serverSchema = z.object({
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   // Pusher
-  PUSHER_APP_ID: z.string(),
   PUSHER_APP_SECRET: z.string(),
-  PUSHER_APP_CLUSTER: z.string(),
+  // Algolia
+  ALGOLIA_ADMIN_KEY: z.string(),
 });
 
 /**
@@ -36,7 +36,15 @@ export const serverSchema = z.object({
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
+  NEXT_PUBLIC_PUSHER_APP_ID: z.string(),
   NEXT_PUBLIC_PUSHER_APP_KEY: z.string(),
+  NEXT_PUBLIC_PUSHER_APP_CLUSTER: z.string(),
+  NEXT_PUBLIC_ALGOLIA_API_ID: z.string(),
+  NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_KEY: z.string(),
+  NEXT_PUBLIC_ALGOLIA_INDEX_NAME: z.string(),
+  NEXT_PUBLIC_ALGOLIA_QUERY_SUGGESTIONS: z.string(),
+  NEXT_PUBLIC_STAFF_EMAIL_DOMAIN: z.string(),
+  NEXT_PUBLIC_STUDENT_EMAIL_DOMAIN: z.string(),
 });
 
 /**
@@ -46,5 +54,16 @@ export const clientSchema = z.object({
  * @type {{ [k in keyof z.infer<typeof clientSchema>]: z.infer<typeof clientSchema>[k] | undefined }}
  */
 export const clientEnv = {
+  NEXT_PUBLIC_PUSHER_APP_ID: process.env.NEXT_PUBLIC_PUSHER_APP_ID,
   NEXT_PUBLIC_PUSHER_APP_KEY: process.env.NEXT_PUBLIC_PUSHER_APP_KEY,
+  NEXT_PUBLIC_PUSHER_APP_CLUSTER: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
+  NEXT_PUBLIC_ALGOLIA_API_ID: process.env.NEXT_PUBLIC_ALGOLIA_API_ID,
+  NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_KEY:
+    process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_ONLY_KEY,
+  NEXT_PUBLIC_ALGOLIA_INDEX_NAME: process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME,
+  NEXT_PUBLIC_ALGOLIA_QUERY_SUGGESTIONS:
+    process.env.NEXT_PUBLIC_ALGOLIA_QUERY_SUGGESTIONS,
+  NEXT_PUBLIC_STAFF_EMAIL_DOMAIN: process.env.NEXT_PUBLIC_STAFF_EMAIL_DOMAIN,
+  NEXT_PUBLIC_STUDENT_EMAIL_DOMAIN:
+    process.env.NEXT_PUBLIC_STUDENT_EMAIL_DOMAIN,
 };

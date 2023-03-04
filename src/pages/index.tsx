@@ -1,78 +1,51 @@
 import { type NextPage } from "next";
-import { signIn, signOut, useSession } from "next-auth/react";
-
 import { trpc } from "../utils/trpc";
 import Layout from "components/layout/Layout";
-import { PusherProvider } from "utils/pusher";
-import Pusher from "pusher-js";
 import PostCreate from "components/post/PostCreate";
 import PostList from "components/post/PostList";
-import StickyCard from "components/StickyCard";
+import CategoryTabs from "components/CategoryTabs";
+import { useCategoryStore } from "store/categoryStore";
+import StickyList from "components/sticky/StickyList";
+import { useEffect } from "react";
 
-const Home: NextPage = () => {
-  return (
-    <Layout>
-      {/* Left */}
+const Home: NextPage = (props) => {
+  // const algoliaPushIndex = trpc.algolia.pushAllIndex.useQuery();
+
+  const category = useCategoryStore((state) => state.category);
+  const { data: userRole } = trpc.auth.getUserRole.useQuery();
+  const { data: userId } = trpc.auth.getUserId.useQuery();
+
+  return userId ? (
+    <Layout type="TIMELINE">
       <section className="col-span-2">
         <PostCreate />
+        <CategoryTabs />
       </section>
-      <section className="flex flex-col items-center gap-2">
-        <PostList />
+      {/* Left */}
+      <section className="space-y-4">
+        <PostList categoryName={category} />
       </section>
       {/* Right */}
-      <section className="col-start-2 col-end-3 row-start-2 row-end-3 max-w-xs">
-        <div className="sticky top-0">
-          <div className="h-screen space-y-1 overflow-y-auto">
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-            <StickyCard color="purple" text="Importnat announcement" />
-            <StickyCard color="teal" text="not importnat announcement" />
-            <StickyCard color="rose" text="importttt announcement" />
-          </div>
-        </div>
+      <section className="col-start-2 col-end-3 row-start-2 row-end-3 hidden max-w-xs sm:block lg:w-72">
+        <StickyList />
+      </section>
+    </Layout>
+  ) : (
+    <Layout type="TIMELINE">
+      <section className="col-span-2">
+        <PostCreate />
+        <CategoryTabs />
+      </section>
+      {/* Left */}
+      <section className="space-y-4">
+        <PostList categoryName={category} />
+      </section>
+      {/* Right */}
+      <section className="col-start-2 col-end-3 row-start-2 row-end-3 hidden max-w-xs sm:block lg:w-72">
+        <StickyList />
       </section>
     </Layout>
   );
 };
 
 export default Home;
-
-const PusherShowcase: React.FC = () => {
-  const pusher = new Pusher("12bf7d67fc9ed5e498fa", {
-    cluster: "ap1",
-  });
-
-  const channel = pusher.subscribe("my-channel");
-  channel.bind("my-event", function (data: string) {
-    alert(JSON.stringify(data));
-  });
-
-  const something = trpc.pusher.trigger.useQuery();
-
-  return <></>;
-};

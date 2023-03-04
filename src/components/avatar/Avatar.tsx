@@ -4,25 +4,51 @@ import Link from "next/link";
 type AvatarProps = {
   src: string;
   alt: string;
+  size: "sm" | "md" | "lg";
   addStyles?: string;
-  profileLink: string;
+  profileSlug?: string;
 };
 
-const Avatar = (props: AvatarProps) => {
-  return props.src === "" ? (
+const Avatar = ({ src, alt, size, addStyles, profileSlug }: AvatarProps) => {
+  let widthHeight = 0;
+  let twWidth = "",
+    twHeight = "";
+  if (size === "sm") {
+    widthHeight = 36;
+    twWidth = "h-9";
+    twHeight = "h-9";
+  } else if (size === "md") {
+    widthHeight = 48;
+    twWidth = "h-12";
+    twHeight = "h-12";
+  } else if (size === "lg") {
+    widthHeight = 64;
+    twWidth = "h-[64px]";
+    twHeight = "h-[64px]";
+  }
+
+  return src === "" ? (
     <div
-      className={`h-12 w-12 animate-pulse rounded-full bg-gray-400 ${props.addStyles}`}
+      className={`${twHeight} ${twWidth} animate-pulse rounded-full bg-gray-400 ${addStyles}`}
     />
-  ) : (
-    <Link href={props.profileLink}>
+  ) : profileSlug ? (
+    <Link href={`/users/${profileSlug}`}>
       <Image
-        src={props.src}
-        alt={props.alt}
-        width="48"
-        height="48"
-        className={`rounded-full hover:opacity-80 ${props.addStyles}`}
+        src={src}
+        alt={alt}
+        width={widthHeight}
+        height={widthHeight}
+        className={`rounded-full hover:opacity-80 ${addStyles}`}
       />
     </Link>
+  ) : (
+    <Image
+      src={src}
+      alt={alt}
+      width={widthHeight}
+      height={widthHeight}
+      className={`rounded-full hover:opacity-80 ${addStyles}`}
+    />
   );
 };
 
