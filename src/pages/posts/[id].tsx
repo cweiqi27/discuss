@@ -16,6 +16,7 @@ import AboutProfileCard from "components/profile/AboutProfileCard";
 import { useEffect } from "react";
 import Pusher from "pusher-js";
 import { PUSHER_APP_CLUSTER, PUSHER_APP_KEY } from "utils/constants";
+import Spinner from "components/Spinner";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext<{ id: string }>
@@ -58,8 +59,12 @@ const PostPage = (
 
   return (
     <Layout type="TIMELINE">
+      {isLoading && (
+        <div className="fixed top-1/2 left-1/2 right-1/2 flex flex-col items-center justify-center gap-2 text-2xl text-zinc-300">
+          <Spinner />
+        </div>
+      )}
       <section className="sm:w-[36rem]">
-        {isLoading && <div>Loading</div>}
         {isError && <div>Error</div>}
         {post && (
           <PostCardStatic
