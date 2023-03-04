@@ -136,6 +136,8 @@ const PostHistoryList = ({ userId, size }: PostHistoryProps) => {
                 )}
               </div>
             </>
+          ) : isFetching ? (
+            <LoadingBlur />
           ) : (
             <div className="text-zinc-400">This user has never posted.</div>
           )}

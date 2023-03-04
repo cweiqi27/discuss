@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import PostHistoryList from "components/history/PostHistory";
 import ProfileBio from "components/profile/ProfileBio";
 import { useMemo } from "react";
+import Spinner from "components/Spinner";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext<{ id: string }>
@@ -41,6 +42,7 @@ const UserPage = (
   const { data, isLoading, isError, isSuccess } = trpc.user.getById.useQuery({
     id,
   });
+  const { data: sessionUserId } = trpc.auth.getUserId.useQuery();
 
   const joinedAtDate = useMemo(() => {
     return data && format(data.createdAt, "MMMM do, yyyy");
@@ -48,8 +50,12 @@ const UserPage = (
 
   return (
     <Layout type="PROFILE">
+      {isLoading && (
+        <div className="fixed top-1/2 left-1/2 right-1/2 flex flex-col items-center justify-center gap-2 text-2xl text-zinc-300">
+          <Spinner />
+        </div>
+      )}
       <section className="sm:w-[36rem]">
-        {isLoading && <div>Loading</div>}
         {isError && <div>Error</div>}
         {data && (
           <>
@@ -78,8 +84,11 @@ const UserPage = (
               </div>
             </div>
 
-            <ProfileBio user={data} />
-            <div className="">
+            <div className="mt-4 flex flex-col gap-2">
+              <ProfileBio
+                user={data}
+                isSessionUser={data.id === sessionUserId}
+              />
               <PostHistoryList userId={data.id} size="md" />
             </div>
           </>

@@ -1,18 +1,24 @@
 import Textarea from "components/form/Textarea";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { RouterOutputs } from "utils/trpc";
 import { trpc } from "utils/trpc";
 import ProfileBioEdit from "./ProfileBioEdit";
 
 type ProfileBioProps = {
   user: RouterOutputs["user"]["getById"];
+  isSessionUser: boolean;
 };
 
-const ProfileBio = ({ user }: ProfileBioProps) => {
+const ProfileBio = ({ user, isSessionUser }: ProfileBioProps) => {
   const [edit, setEdit] = useState<boolean>(false);
   const { data: profileBio } = trpc.user.getProfileBio.useQuery({
     userId: user.id,
   });
+  const unsetBioText = useMemo(() => {
+    return isSessionUser
+      ? "Say something about yourself."
+      : "This user has not written a bio.";
+  }, [isSessionUser]);
 
   return (
     <>
@@ -23,12 +29,18 @@ const ProfileBio = ({ user }: ProfileBioProps) => {
           setEdit={setEdit}
         />
       ) : (
-        <div className="flex flex-col gap-2 bg-zinc-700 p-2">
+        <div className="inline-flex items-center gap-2 rounded bg-zinc-800 p-2">
           <p className="text-lg text-zinc-400">
             {profileBio && profileBio.profileBio
               ? profileBio.profileBio
-              : "Say something about yourself."}
+              : unsetBioText}
           </p>
+          <button
+            onClick={() => setEdit(true)}
+            className="rounded-full px-3 py-1 text-zinc-300 transition hover:bg-zinc-700 hover:opacity-80"
+          >
+            Edit
+          </button>
         </div>
       )}
     </>
