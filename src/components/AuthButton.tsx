@@ -7,9 +7,12 @@ import {
 } from "@tabler/icons-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useHeaderStore } from "store/headerStore";
 import UserAvatar from "./avatar/UserAvatar";
 
 const AuthButton = () => {
+  const isShowHeader = useHeaderStore((state) => state.showHeader);
+
   const { data: sessionData, status } = useSession();
 
   const handleClick = () => {
@@ -45,8 +48,10 @@ const AuthButton = () => {
           <div className="relative">
             <Popover.Panel
               as="div"
-              className="absolute right-0 top-6 flex w-max
-            flex-col rounded-md bg-zinc-700 p-1"
+              className={`absolute right-0 top-6 ${
+                isShowHeader ? "flex" : "hidden"
+              } w-max
+            flex-col rounded-md bg-zinc-700 p-1`}
             >
               <div className="flex cursor-default justify-center border-b-2 border-zinc-600 py-2 text-xs text-zinc-400">
                 {sessionData.user?.name}

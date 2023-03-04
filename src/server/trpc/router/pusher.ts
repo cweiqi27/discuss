@@ -4,7 +4,7 @@ import { router, publicProcedure } from "../trpc";
 
 export const pusherRouter = router({
   trigger: publicProcedure.query(() => {
-    pusher.trigger("my-channel", "my-event", {
+    return pusher.trigger("my-channel", "my-event", {
       message: "pusher works",
     });
   }),

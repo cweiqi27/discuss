@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Status } from "@prisma/client";
 import Textarea from "components/form/Textarea";
 import LoadingBlur from "components/LoadingBlur";
 import Spinner from "components/Spinner";
@@ -13,10 +14,16 @@ import { trpc } from "utils/trpc";
 type CommentCreateProps = {
   parentId?: string;
   postId: string;
+  postStatus: Status;
   callback?: () => void;
 };
 
-const CommentCreate = (props: CommentCreateProps) => {
+const CommentCreate = ({
+  parentId,
+  postId,
+  postStatus,
+  callback,
+}: CommentCreateProps) => {
   const {
     register,
     reset,
@@ -44,9 +51,10 @@ const CommentCreate = (props: CommentCreateProps) => {
       getValues("content");
 
     createComment.mutate({
-      postId: props.postId,
+      postId: postId,
       content: content,
-      parentId: props.parentId ?? null,
+      status: postStatus,
+      parentId: parentId ?? null,
     });
   };
 
@@ -63,13 +71,18 @@ const CommentCreate = (props: CommentCreateProps) => {
           <Textarea
             name="content"
             register={register}
-            placeholder="Leave a comment 🤓"
+            placeholder={`${
+              postStatus === "PRESENT"
+                ? "Leave a comment 🤓"
+                : "Comment disabled"
+            }`}
             addStyles="w-full"
+            disabled={postStatus !== "PRESENT"}
           />
           {createComment.isLoading && <LoadingBlur />}
         </div>
         <button
-          disabled={!content}
+          disabled={!content || postStatus !== "PRESENT"}
           className={`${
             content
               ? "cursor-pointer bg-zinc-700 text-zinc-400 hover:bg-zinc-600 hover:text-zinc-300"
@@ -83,6 +96,10 @@ const CommentCreate = (props: CommentCreateProps) => {
 
       {createComment.isSuccess && (
         <Toast type="SUCCESS" message="Comment successfully created!" />
+      )}
+
+      {createComment.isError && (
+        <Toast type="ERROR" message="Something went wrong!" />
       )}
     </>
   );

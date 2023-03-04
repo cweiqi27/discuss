@@ -9,10 +9,49 @@ export const userRouter = router({
         id: z.string(),
       })
     )
-    .query(({ ctx, input }) => {
-      return ctx.prisma.user.findUniqueOrThrow({
+    .query(async ({ ctx, input }) => {
+      const { id } = input;
+      return await ctx.prisma.user.findUniqueOrThrow({
         where: {
-          id: input.id,
+          id: id,
+        },
+      });
+    }),
+
+  getProfileBio: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { userId } = input;
+      return await ctx.prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          profileBio: true,
+        },
+      });
+    }),
+
+  createOrEditProfileBio: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        content: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { userId, content } = input;
+
+      return await ctx.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          profileBio: content,
         },
       });
     }),

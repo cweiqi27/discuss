@@ -1,28 +1,53 @@
-import { IconMessageDots, IconMessages } from "@tabler/icons-react";
+import { Menu } from "@headlessui/react";
+import type { Role, Status } from "@prisma/client";
+import {
+  IconMessageDots,
+  IconMessages,
+  IconPencil,
+  IconTrash,
+} from "@tabler/icons-react";
 import Avatar from "components/avatar/Avatar";
 import CountIndicator from "components/CountIndicator";
+import DotsMenu from "components/DotsMenu";
 import Vote from "components/post/Vote";
-import { formatDistanceToNowStrict, isEqual } from "date-fns";
-import React, { useState } from "react";
+import { formatDistanceToNow, isEqual } from "date-fns";
+import Link from "next/link";
+import React, { useMemo, useState } from "react";
 import type { RouterOutputs } from "utils/trpc";
 import { trpc } from "utils/trpc";
 import CommentCreate from "./CommentCreate";
+import CommentEdit from "./CommentEdit";
 import CommentListReplies from "./CommentListReplies";
 
 type CommentCardProps = {
   comment: RouterOutputs["comment"]["getAllCursor"]["comments"][number];
+  postStatus: Status;
+  userId: string | undefined;
+  userRole: Role | undefined;
 };
 
-const CommentCard = ({ comment }: CommentCardProps) => {
+const CommentCard = ({
+  comment,
+  postStatus,
+  userId,
+  userRole,
+}: CommentCardProps) => {
   const [showReplies, setShowReplies] = useState<boolean>(false);
   const [replyComment, setReplyComment] = useState<boolean>(false);
+  const [edit, setEdit] = useState<boolean>(false);
 
   const { data: children } = trpc.comment.getChildrenCount.useQuery({
     parentId: comment.id,
   });
 
-  const commentDate = formatDistanceToNowStrict(comment.createdAt) + " ago";
-  const editedDate = formatDistanceToNowStrict(comment.updatedAt) + " ago";
+  const commentDate = useMemo(() => {
+    return formatDistanceToNow(comment.createdAt) + " ago";
+  }, [comment.createdAt]);
+  const editedDate = useMemo(() => {
+    const date = formatDistanceToNow(comment.updatedAt) + " ago";
+    const isEdited = !isEqual(comment.createdAt, comment.updatedAt);
+    return { date, isEdited };
+  }, [comment.updatedAt, comment.createdAt]);
 
   const handleClickShowReplies = () => {
     setShowReplies(!showReplies);
@@ -37,25 +62,83 @@ const CommentCard = ({ comment }: CommentCardProps) => {
               size="sm"
               src={comment.user.image ?? ""}
               alt={comment.user.name ?? ""}
+              profileSlug={comment.userId}
             />
-            <span className="flex gap-1 text-sm font-semibold text-zinc-300">
+            <Link
+              href={`/users/${comment.userId}`}
+              className="flex gap-1 text-sm font-semibold text-zinc-300 hover:opacity-80"
+            >
               {comment.user.name}
-            </span>
+            </Link>
           </div>
-          {!isEqual(comment.createdAt, comment.updatedAt) && (
-            <>
-              <span className="group inline-flex hover:underline">
-                (edited : {editedDate})
-              </span>
-            </>
-          )}
-          <span className="text-xs text-zinc-400">{commentDate}</span>
+          <div className="flex gap-1">
+            <div className="group inline-flex gap-1">
+              <span className="text-xs text-zinc-400">{commentDate}</span>
+              {editedDate.isEdited && (
+                <div className="inline-flex text-xs text-zinc-400 hover:underline">
+                  {"(edited"}
+                  <div className="hidden group-hover:block group-hover:underline">
+                    : {editedDate.date}
+                  </div>
+                  {")"}
+                </div>
+              )}
+            </div>
+            {(comment.userId === userId ||
+              userRole === "MOD" ||
+              userRole === "ADMIN") && (
+              <DotsMenu>
+                <Menu.Item as="div">
+                  {comment.userId === userId && (
+                    <button
+                      onClick={() => setEdit(!edit)}
+                      className="flex w-full items-center justify-start gap-2 rounded px-2 py-1 text-zinc-400 hover:bg-zinc-600 hover:text-zinc-100"
+                    >
+                      <IconPencil />
+                      <span className="text-sm">Edit</span>
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item as="div">
+                  {(userRole === "MOD" ||
+                    userRole === "ADMIN" ||
+                    comment.userId === userId) && (
+                    <button className="flex w-full items-center justify-start gap-2 rounded px-2 py-1 text-zinc-400 hover:bg-zinc-600 hover:text-zinc-100">
+                      <IconTrash />
+                      <span className="text-sm">Delete</span>
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item as="div">
+                  {comment.userId !== userId && userRole === "USER" && (
+                    <button
+                      type="button"
+                      className="flex w-full items-center justify-start gap-2 rounded px-2 py-1 text-zinc-400 hover:bg-zinc-600 hover:text-zinc-100"
+                    >
+                      <IconPencil />
+                      <span className="text-sm">Report</span>
+                    </button>
+                  )}
+                </Menu.Item>
+              </DotsMenu>
+            )}
+          </div>
         </div>
         {/* Content */}
         <div className="max-w-lg self-start">
-          <span className="break-words px-3 py-1 text-justify text-zinc-200">
-            {comment.content}
-          </span>
+          {edit ? (
+            <CommentEdit
+              commentId={comment.id}
+              userId={comment.userId}
+              content={comment.content}
+              edit={edit}
+              setEdit={setEdit}
+            />
+          ) : (
+            <span className="break-words px-3 py-1 text-justify text-zinc-200">
+              {comment.content}
+            </span>
+          )}
         </div>
         {/* Bottom row */}
         <div className="flex gap-2">
@@ -92,7 +175,11 @@ const CommentCard = ({ comment }: CommentCardProps) => {
         </div>
         {/* Reply comment */}
         {replyComment && (
-          <CommentCreate postId={comment.postId} parentId={comment.id} />
+          <CommentCreate
+            postId={comment.postId}
+            parentId={comment.id}
+            postStatus={postStatus}
+          />
         )}
       </div>
 
@@ -106,7 +193,13 @@ const CommentCard = ({ comment }: CommentCardProps) => {
             onClick={handleClickShowReplies}
           />
           <div className="flex-1 pl-2">
-            <CommentListReplies postId={comment.postId} parentId={comment.id} />
+            <CommentListReplies
+              postId={comment.postId}
+              parentId={comment.id}
+              postStatus={postStatus}
+              userId={userId}
+              userRole={userRole}
+            />
           </div>
         </div>
       )}

@@ -11,6 +11,8 @@ import { appRouter } from "server/trpc/router/_app";
 import Avatar from "components/avatar/Avatar";
 import { format } from "date-fns";
 import PostHistoryList from "components/history/PostHistory";
+import ProfileBio from "components/profile/ProfileBio";
+import { useMemo } from "react";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext<{ id: string }>
@@ -39,7 +41,10 @@ const UserPage = (
   const { data, isLoading, isError, isSuccess } = trpc.user.getById.useQuery({
     id,
   });
-  const joinedAtDate = data && format(data.createdAt, "MMMM do, yyyy");
+
+  const joinedAtDate = useMemo(() => {
+    return data && format(data.createdAt, "MMMM do, yyyy");
+  }, [data]);
 
   return (
     <Layout type="PROFILE">
@@ -73,6 +78,7 @@ const UserPage = (
               </div>
             </div>
 
+            <ProfileBio user={data} />
             <div className="">
               <PostHistoryList userId={data.id} size="md" />
             </div>

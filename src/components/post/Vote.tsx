@@ -229,6 +229,7 @@ const Vote = ({ type, postId, commentPostId, isFlexRow }: VoteProps) => {
       ) {
         createNotification.mutate({
           id: type === "post" ? postId : commentPostId ?? "",
+          commentId: type === "comment" ? postId : null,
           notificationTypeId: type === "post" ? 1 : 3,
         });
       }

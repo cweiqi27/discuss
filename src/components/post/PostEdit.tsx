@@ -11,7 +11,8 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import useMeasure from "react-use-measure";
 import { usePostEditStore } from "store/postStaticStore";
-import { EditPostFormSchema, EditPostFormSchemaType } from "types/form";
+import type { EditPostFormSchemaType } from "types/form";
+import { EditPostFormSchema } from "types/form";
 import { useEffectOnce } from "usehooks-ts";
 import { editVariants } from "utils/framer";
 import type { RouterOutputs } from "utils/trpc";
@@ -130,7 +131,7 @@ const PostEdit = ({ post }: PostEditProps) => {
                   errors={errors}
                   name="title"
                   as="span"
-                  className="col-start-2 col-end-11 text-pink-400"
+                  className="col-start-2 col-end-11 self-start rounded-full border border-pink-500 px-3 py-1 text-pink-500"
                 />
 
                 {/* Description field */}

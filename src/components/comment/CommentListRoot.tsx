@@ -1,4 +1,5 @@
 import { Menu } from "@headlessui/react";
+import { Status } from "@prisma/client";
 import SortByButton from "components/SortByButton";
 import { useEffect, useState } from "react";
 import { useSortStore } from "store/sortStore";
@@ -9,12 +10,15 @@ import CommentLoadingSkeleton from "./CommentLoadingSkeleton";
 
 type CommentListRootProps = {
   postId: string;
+  postStatus: Status;
 };
 
-const CommentListRoot = ({ postId }: CommentListRootProps) => {
+const CommentListRoot = ({ postId, postStatus }: CommentListRootProps) => {
   const sortBy = useSortStore((state) => state.sortBy);
-
   const [scrollPosition, setScrollPosition] = useState<number>(0);
+
+  const { data: userRole } = trpc.auth.getUserRole.useQuery();
+  const { data: userId } = trpc.auth.getUserId.useQuery();
 
   useScrollPositionDebounce(
     ({ currPos }) => {
@@ -75,7 +79,15 @@ const CommentListRoot = ({ postId }: CommentListRootProps) => {
           </div>
           <div className="mt-4 rounded-lg border-y border-zinc-600 bg-zinc-900">
             {comments.map((comment) => {
-              return <CommentCard key={comment.id} comment={comment} />;
+              return (
+                <CommentCard
+                  key={comment.id}
+                  comment={comment}
+                  postStatus={postStatus}
+                  userId={userId}
+                  userRole={userRole}
+                />
+              );
             })}
           </div>
         </>
@@ -84,7 +96,7 @@ const CommentListRoot = ({ postId }: CommentListRootProps) => {
       {!isFetchedAfterMount && isFetching && (
         <div className="space-y-2">
           <h1 className="text-4xl font-bold text-zinc-300">Comments</h1>
-          <div className="inline-flex items-center gap-1 rounded-lg bg-zinc-700 p-2 text-zinc-300 transition hover:bg-zinc-600">
+          <div className="inline-flex cursor-default items-center gap-1 rounded-lg bg-zinc-700 p-2 text-zinc-300 transition hover:bg-zinc-600">
             Sort by: ...
           </div>
           <div className="mt-4 rounded-lg border-y border-zinc-600 bg-zinc-900">
@@ -107,7 +119,7 @@ const CommentListRoot = ({ postId }: CommentListRootProps) => {
         <>
           <div className="space-y-2">
             <h1 className="text-4xl font-bold text-zinc-300">Comments</h1>
-            <div className="inline-flex items-center gap-1 rounded-lg bg-zinc-700 p-2 text-zinc-300 transition hover:bg-zinc-600">
+            <div className="inline-flex cursor-default items-center gap-1 rounded-lg bg-zinc-700 p-2 text-zinc-300 transition hover:bg-zinc-600">
               Sort by: ...
             </div>
           </div>

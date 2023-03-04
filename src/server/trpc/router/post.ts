@@ -1,4 +1,4 @@
-import { VoteType } from "@prisma/client";
+import { Role, Status } from "@prisma/client";
 import { z } from "zod";
 import {
   router,
@@ -46,7 +46,7 @@ export const postRouter = router({
       return { post };
     }),
 
-  getAllCursor: publicProcedure
+  getByCategoryCursor: publicProcedure
     .input(
       z.object({
         limit: z.number().min(1).max(100).default(10),
@@ -63,6 +63,7 @@ export const postRouter = router({
         },
         where: {
           categoryId: input.categoryId,
+          status: "PRESENT",
         },
         cursor: cursor ? { id: cursor } : undefined,
         include: {
@@ -193,27 +194,57 @@ export const postRouter = router({
         flairId: flairId,
       }));
       try {
-        await ctx.prisma.post.create({
-          data: {
-            title: input.title,
-            description: input.description,
-            user: {
-              connect: {
-                id: ctx.session.user.id,
+        return await ctx.prisma.post
+          .create({
+            data: {
+              title: input.title,
+              description: input.description,
+              user: {
+                connect: {
+                  id: ctx.session.user.id,
+                },
+              },
+              category: {
+                connect: {
+                  id: input.categoryId,
+                },
+              },
+              flairs: {
+                createMany: {
+                  data: flairsObjects,
+                },
               },
             },
-            category: {
-              connect: {
-                id: input.categoryId,
+            include: {
+              user: true,
+              flairs: {
+                select: {
+                  flair: {
+                    select: {
+                      flairName: true,
+                    },
+                  },
+                },
               },
+              category: true,
             },
-            flairs: {
-              createMany: {
-                data: flairsObjects,
-              },
-            },
-          },
-        });
+          })
+          .then(
+            ({ id, title, description, user, createdAt, flairs, category }) => {
+              ctx.algolia.saveObject({
+                objectID: id,
+                title: title,
+                description: description,
+                author: user.name,
+                createdAt: createdAt,
+                flairs: flairs.map((flair) => {
+                  return flair.flair.flairName;
+                }),
+                category: category.categoryName,
+                type: "Post",
+              });
+            }
+          );
       } catch (e) {
         console.log(e);
       }
@@ -259,19 +290,43 @@ export const postRouter = router({
       }
     }),
 
-  deleteBySessionUser: protectedProcedure
+  delete: protectedProcedure
     .input(
       z.object({
         postId: z.string(),
         userId: z.string(),
+        role: z.nativeEnum(Role).nullish(),
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const status =
+        input.role === "ADMIN"
+          ? Status.REMOVED_BY_ADMIN
+          : input.role === "MOD"
+          ? Status.REMOVED_BY_MODERATOR
+          : input.role === "USER"
+          ? Status.REMOVED_BY_USER
+          : null;
       try {
-        if (input.userId === ctx.session.user.id)
-          return ctx.prisma.post.delete({
+        if (!status && input.userId !== ctx.session.user.id) return;
+        if (status) {
+          return await ctx.prisma.post.update({
             where: { id: input.postId },
+            data: {
+              status: status,
+              updatedAt: new Date(),
+            },
           });
+        }
+        if (input.userId === ctx.session.user.id) {
+          return await ctx.prisma.post.update({
+            where: { id: input.postId },
+            data: {
+              status: "REMOVED_BY_USER",
+              updatedAt: new Date(),
+            },
+          });
+        }
       } catch (e) {
         console.log(e);
       }

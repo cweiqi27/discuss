@@ -6,24 +6,45 @@ export const notificationRouter = router({
     .input(
       z.object({
         id: z.string(),
+        commentId: z.string().nullish(),
         notificationTypeId: z.number(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const receivers = await ctx.prisma.post.findMany({
-        where: {
-          id: input.id,
-        },
-        select: {
-          user: true,
-        },
-      });
-
+      const { id, notificationTypeId, commentId } = input;
       const receiverObjects: {
         userId: string;
-      }[] = receivers.map((receiver) => ({
-        userId: receiver.user.id,
-      }));
+      }[] = [];
+
+      await ctx.prisma.post
+        .findFirst({
+          where: {
+            id: id,
+          },
+          select: {
+            user: true,
+          },
+        })
+        .then(
+          (receiver) =>
+            receiver && receiverObjects.push({ userId: receiver?.user.id })
+        );
+
+      commentId &&
+        (await ctx.prisma.comment
+          .findFirst({
+            where: {
+              id: commentId,
+            },
+            select: {
+              user: true,
+            },
+          })
+          .then((receiver) => {
+            if (receiver && receiver.user.id !== ctx.session.user.id) {
+              receiverObjects.push({ userId: receiver?.user.id });
+            }
+          }));
 
       try {
         if (
@@ -31,28 +52,63 @@ export const notificationRouter = router({
             where: {
               userId: ctx.session.user.id,
               notificationObject: {
-                postId: input.id,
-                notificationTypeId: input.notificationTypeId,
+                postId: id,
+                notificationTypeId: notificationTypeId,
               },
             },
           }))
         ) {
-          return await ctx.prisma.notificationInitiate.create({
-            data: {
-              userId: ctx.session.user.id,
-              notificationObject: {
-                create: {
-                  notificationsReceive: {
-                    createMany: {
-                      data: receiverObjects,
+          return await ctx.prisma.notificationInitiate
+            .create({
+              data: {
+                userId: ctx.session.user.id,
+                notificationObject: {
+                  create: {
+                    notificationsReceive: {
+                      createMany: {
+                        data: receiverObjects,
+                      },
                     },
+                    notificationTypeId: notificationTypeId,
+                    postId: id,
                   },
-                  notificationTypeId: input.notificationTypeId,
-                  postId: input.id,
                 },
               },
-            },
-          });
+              include: {
+                notificationObject: {
+                  include: {
+                    notificationsReceive: {
+                      select: {
+                        userId: true,
+                      },
+                    },
+                  },
+                },
+              },
+            })
+
+            .then((notification) => {
+              notification.notificationObject?.notificationsReceive.map(
+                async (notificationReceive) => {
+                  await ctx.prisma.user.update({
+                    where: {
+                      id: notificationReceive.userId,
+                    },
+                    data: {
+                      newNotificationCount: {
+                        increment: 1,
+                      },
+                    },
+                  });
+
+                  const notificationChannel =
+                    "user-" + notificationReceive.userId;
+                  ctx.pusher.trigger(notificationChannel, "send-notification", {
+                    message: "Invalidate notifications.",
+                  });
+                }
+              );
+            });
         }
       } catch (e) {
         console.log(e);
@@ -113,5 +169,42 @@ export const notificationRouter = router({
         notifications,
         nextCursor,
       };
+    }),
+
+  getNotificationCount: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { userId } = input;
+      return await ctx.prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          newNotificationCount: true,
+        },
+      });
+    }),
+
+  updateNotificationCount: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        count: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { userId, count } = input;
+      return await ctx.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          newNotificationCount: count,
+        },
+      });
     }),
 });

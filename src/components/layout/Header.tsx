@@ -1,4 +1,5 @@
-import { IconBell } from "@tabler/icons-react";
+import { IconBell, IconSearch } from "@tabler/icons-react";
+import Search from "components/algolia/Search";
 import AuthButton from "components/AuthButton";
 import LogoLink from "components/LogoLink";
 import NotificationPopover from "components/notification/NotificationPopover";
@@ -25,9 +26,9 @@ const Header = () => {
     (state) => state.updateLiftStickyFalse
   );
 
-  const { data: userRole } = trpc.auth.getUserRole.useQuery();
-
+  const [search, setSearch] = useState<boolean>(false);
   const [scrollPosition, setScrollPosition] = useState<number>(0);
+
   useScrollPositionDebounce(
     ({ currPos }) => {
       if (currPos.y < -350) {
@@ -63,22 +64,31 @@ const Header = () => {
       <motion.nav
         variants={headerVariants}
         animate={isShowHeader ? "enter" : "exit"}
-        className={`fixed top-0 z-50 flex h-20 w-full items-center justify-between
+        className={`fixed top-0 ${
+          search ? "" : "z-50"
+        } flex h-20 w-full items-center justify-between
           border-b-[0.05rem] border-zinc-800 bg-gradient-to-r from-zinc-900/20 to-zinc-900/40 pb-1 backdrop-blur md:px-4`}
       >
         <div className="flex gap-2">
           <LogoLink />
         </div>
-        {/* <div className="absolute -z-10 flex w-screen items-center justify-center ">
-        <div className="h-8 w-32 rounded-full bg-zinc-200 text-lg text-green-500">
-          TEST
-        </div>
-      </div> */}
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSearch(!search)}
+            className="group inline-flex items-center gap-1 rounded-full p-2"
+          >
+            <IconSearch className="text-zinc-400 transition group-hover:text-zinc-300 sm:text-zinc-500" />
+            <input
+              type="text"
+              className="hidden h-8 w-32 cursor-text rounded-full border border-zinc-500 bg-zinc-900 px-2 outline-none transition placeholder:italic group-hover:border-purple-300 sm:block"
+              placeholder="Search..."
+            />
+          </button>
           <NotificationPopover />
           <AuthButton />
         </div>
       </motion.nav>
+      <Search search={search} setSearch={setSearch} />
     </>
   );
 };

@@ -26,6 +26,7 @@ import {
 } from "@tabler/icons-react";
 import LoadingBlur from "components/LoadingBlur";
 import Toast from "components/Toast";
+import { useHeaderStore } from "store/headerStore";
 
 const ModalGeneric = lazy(() => import("components/modal/ModalGeneric"));
 
@@ -268,12 +269,11 @@ const PostCreate = () => {
                       placeholder="A catchy title!"
                       addStyles="col-start-2 col-end-11 outline-teal-500"
                     />
-                    <div className="cold-end-13 col-start-11" />
                     <ErrorMessage
                       errors={errors}
                       name="title"
                       as="span"
-                      className="col-start-2 col-end-11 text-pink-400"
+                      className="col-start-2 col-end-11 self-start rounded-full border border-pink-500 px-3 py-1 text-pink-500"
                     />
 
                     {/* Sticky toggle */}

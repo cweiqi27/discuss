@@ -46,6 +46,23 @@ const PostCard = ({ post }: PostCardProps) => {
     return formatDistanceToNow(post.updatedAt);
   }, [post.updatedAt]);
 
+  // const handleClickShare = () => {
+  //   if (navigator.canShare()) {
+  //     navigator
+  //       .share({
+  //         url: `https://share.toogoodtogo.com/store/1006/milestones/meals-saved/`,
+  //       })
+  //       .then(() => {
+  //         console.log("Post shared successful");
+  //       })
+  //       .catch(() => {
+  //         console.log("Post shared failed");
+  //       });
+  //   } else {
+  //     console.log("Sorry! Your browser does not support Web Share API");
+  //   }
+  // };
+
   return (
     <>
       <div

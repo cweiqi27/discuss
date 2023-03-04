@@ -1,6 +1,6 @@
 import { formatDistanceToNowStrict } from "date-fns";
 import Link from "next/link";
-import React from "react";
+import React, { useMemo } from "react";
 import type { RouterOutputs } from "utils/trpc";
 import Avatar from "../avatar/Avatar";
 
@@ -13,10 +13,9 @@ const MESSAGE_LOOKUP = {
 
 type NotificationProps = {
   notification: RouterOutputs["notification"]["getAllCursor"]["notifications"][number];
-  isLoading?: boolean;
 };
 
-const Notification = ({ notification, isLoading }: NotificationProps) => {
+const Notification = ({ notification }: NotificationProps) => {
   const notificationInitiatorName =
     notification.notificationObject.notificationInitiate.user.name ?? "";
   const notificationInitiatorImage =
@@ -39,14 +38,16 @@ const Notification = ({ notification, isLoading }: NotificationProps) => {
     default:
       break;
   }
-  const postLink = "/posts/" + notification.notificationObject.post.id;
-  const notificationDate =
-    formatDistanceToNowStrict(notification.notificationObject.createdAt) +
-    " ago";
+  const notificationDate = useMemo(() => {
+    return (
+      formatDistanceToNowStrict(notification.notificationObject.createdAt) +
+      " ago"
+    );
+  }, [notification.notificationObject.createdAt]);
 
   return (
     <Link
-      href={postLink}
+      href={`/posts/${notification.notificationObject.post.id}`}
       className="flex items-center gap-4 rounded-sm px-2 py-4 hover:bg-zinc-700 sm:text-lg"
     >
       <div className="shrink-0">
@@ -56,12 +57,12 @@ const Notification = ({ notification, isLoading }: NotificationProps) => {
           alt={notificationInitiatorName}
         />
       </div>
-      <div className="flex flex-col gap-2">
-        <span className="text-sm leading-snug text-zinc-300">
+      <div className="flex flex-col gap-2 overflow-auto">
+        <p className="truncate text-sm leading-snug text-zinc-300">
           {notificationInitiatorName}
           {message}
           {notification.notificationObject.post.title ?? ""}
-        </span>
+        </p>
         <span className="text-xs text-zinc-400">{notificationDate}</span>
       </div>
     </Link>

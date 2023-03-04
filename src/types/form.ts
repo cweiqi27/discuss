@@ -14,26 +14,20 @@ export const EditPostFormSchema = z.object({
   description: z.string().nullish(),
 });
 
-export type EditPostFormSchema = z.infer<typeof EditPostFormSchema>;
+export type EditPostFormSchemaType = z.infer<typeof EditPostFormSchema>;
 
 export const CreateCommentFormSchema = z.object({
-  content: z.string().min(1, { message: "" }),
+  content: z.string().min(1, { message: "Content is required." }),
 });
 
 export type CreateCommentFormSchemaType = z.infer<
   typeof CreateCommentFormSchema
 >;
 
-// Discussion form type
-type PostFormType = {
-  title: string;
-  description?: string;
-};
+export const EditProfileBioFormSchema = z.object({
+  bio: z.string().min(1, { message: "Bio is required." }),
+});
 
-type DiscussionFormType = PostFormType & {
-  flair?: number[];
-};
-
-type AnnouncementFormType = PostFormType & {
-  isSticky?: boolean;
-};
+export type EditProfileBioFormSchemaType = z.infer<
+  typeof EditProfileBioFormSchema
+>;

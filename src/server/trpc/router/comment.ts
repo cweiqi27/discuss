@@ -1,3 +1,4 @@
+import { Role, Status } from "@prisma/client";
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
@@ -6,19 +7,29 @@ export const commentRouter = router({
     .input(
       z.object({
         postId: z.string(),
+        status: z.nativeEnum(Status),
         content: z.string(),
         parentId: z.string().nullish(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return ctx.prisma.comment.create({
-        data: {
-          content: input.content,
-          postId: input.postId,
-          userId: ctx.session.user.id,
-          parentId: input.parentId,
-        },
-      });
+      try {
+        if (input.status === "PRESENT") {
+          return await ctx.prisma.comment.create({
+            data: {
+              content: input.content,
+              postId: input.postId,
+              userId: ctx.session.user.id,
+              parentId: input.parentId,
+            },
+          });
+        } else {
+          throw new Error("Not allowed to comment.");
+          return;
+        }
+      } catch (e) {
+        console.log(e);
+      }
     }),
 
   getAllCursor: publicProcedure
@@ -142,5 +153,71 @@ export const commentRouter = router({
       });
 
       return { childrenCount };
+    }),
+
+  updateBySessionUser: protectedProcedure
+    .input(
+      z.object({
+        commentId: z.string(),
+        content: z.string().min(1),
+        userId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (input.userId !== ctx.session.user.id) return;
+
+      try {
+        return ctx.prisma.comment.update({
+          where: { id: input.commentId },
+          data: {
+            content: input.content,
+            updatedAt: new Date(),
+          },
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    }),
+
+  delete: protectedProcedure
+    .input(
+      z.object({
+        commentId: z.string(),
+        userId: z.string(),
+        role: z.nativeEnum(Role).nullish(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const status =
+        input.role === "ADMIN"
+          ? Status.REMOVED_BY_ADMIN
+          : input.role === "MOD"
+          ? Status.REMOVED_BY_MODERATOR
+          : input.role === "USER"
+          ? Status.REMOVED_BY_USER
+          : null;
+      try {
+        if (!status && input.userId !== ctx.session.user.id) return;
+        if (status) {
+          return await ctx.prisma.comment.update({
+            where: { id: input.commentId },
+            data: {
+              status: status,
+              updatedAt: new Date(),
+            },
+          });
+        }
+        if (input.userId === ctx.session.user.id) {
+          return await ctx.prisma.comment.update({
+            where: { id: input.commentId },
+            data: {
+              status: "REMOVED_BY_USER",
+              updatedAt: new Date(),
+            },
+          });
+        }
+      } catch (e) {
+        console.log(e);
+      }
     }),
 });

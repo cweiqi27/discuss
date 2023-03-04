@@ -61,80 +61,84 @@ const PostHistoryList = ({ userId, size }: PostHistoryProps) => {
     <>
       <div className="relative flex flex-col gap-2 rounded border border-zinc-600 bg-zinc-900/80 px-2">
         <div className="flex flex-col gap-2 ">
-          {formattedPosts.length > 0 && (
-            <h2 className="py-2 text-2xl font-bold text-zinc-200">
-              Post History
-            </h2>
-          )}
+          {formattedPosts.length > 0 ? (
+            <>
+              <h2 className="py-2 text-2xl font-bold text-zinc-200">
+                Post History
+              </h2>
 
-          <div
-            className={`relative ${
-              size === "sm"
-                ? "h-48 overflow-y-auto"
-                : size === "md"
-                ? "h-64  overflow-y-auto"
-                : size === "lg"
-                ? "h-108 overflow-y-auto"
-                : ""
-            }`}
-          >
-            {formattedPosts.map((post) => {
-              return (
-                <>
-                  {post.isShowDateMap.get(post.id) && (
-                    <div className="sticky top-0 bg-zinc-900 pb-2">
-                      <h3 className="text-xs font-semibold text-zinc-300">
-                        {post.date}
-                      </h3>
-                    </div>
-                  )}
-                  <Link
-                    key={post.id}
-                    href={`/posts/${post.id}`}
-                    className="flex items-center justify-between rounded bg-zinc-800 px-4 py-2"
-                  >
-                    <div className="inline-flex gap-2">
-                      <span className="text-zinc-300">
-                        {post.category === "discussion" ? (
-                          <IconMessageChatbot />
-                        ) : post.category === "announcement" ? (
-                          <IconSpeakerphone />
-                        ) : post.category === "sticky" ? (
-                          <IconSticker />
-                        ) : (
-                          <></>
-                        )}
-                      </span>
-                      <span className="text-zinc-300">{post.title}</span>
-                    </div>
-                    {post.commentCount && (
-                      <div className="inline-flex gap-1">
-                        <IconMessage className="text-zinc-300" />
-                        <span className="text-zinc-300">
-                          {post.commentCount}
-                        </span>
-                      </div>
-                    )}
-                    <span className="text-zinc-300">{post.time}</span>
-                  </Link>
-                </>
-              );
-            })}
-            {hasNextPage && (
-              <button
-                className="bg-zinc-000 group relative flex w-full justify-center rounded py-1 transition hover:bg-zinc-800"
-                onClick={handleClickViewMore}
+              <div
+                className={`relative ${
+                  size === "sm"
+                    ? "max-h-48 overflow-y-auto"
+                    : size === "md"
+                    ? "max-h-64  overflow-y-auto"
+                    : size === "lg"
+                    ? "max-h-108 overflow-y-auto"
+                    : ""
+                }`}
               >
-                {isFetching ? (
-                  <span className="py-1">
-                    <Spinner />
-                  </span>
-                ) : (
-                  <span className="text-zinc-400">View more</span>
+                {formattedPosts.map((post) => {
+                  return (
+                    <>
+                      {post.isShowDateMap.get(post.id) && (
+                        <div className="sticky top-0 bg-zinc-900 pb-2">
+                          <h3 className="text-xs font-semibold text-zinc-300">
+                            {post.date}
+                          </h3>
+                        </div>
+                      )}
+                      <Link
+                        key={post.id}
+                        href={`/posts/${post.id}`}
+                        className="flex items-center justify-between rounded bg-zinc-800 px-4 py-2"
+                      >
+                        <div className="inline-flex max-w-xs gap-2">
+                          <span className="text-zinc-300">
+                            {post.category === "discussion" ? (
+                              <IconMessageChatbot />
+                            ) : post.category === "announcement" ? (
+                              <IconSpeakerphone />
+                            ) : post.category === "sticky" ? (
+                              <IconSticker />
+                            ) : (
+                              <></>
+                            )}
+                          </span>
+                          <p className="truncate text-zinc-300">{post.title}</p>
+                        </div>
+                        {post.commentCount && (
+                          <div className="inline-flex gap-1">
+                            <IconMessage className="text-zinc-300" />
+                            <span className="text-zinc-300">
+                              {post.commentCount}
+                            </span>
+                          </div>
+                        )}
+                        <span className="text-zinc-300">{post.time}</span>
+                      </Link>
+                    </>
+                  );
+                })}
+                {hasNextPage && (
+                  <button
+                    className="bg-zinc-000 group relative flex w-full justify-center rounded py-1 transition hover:bg-zinc-800"
+                    onClick={handleClickViewMore}
+                  >
+                    {isFetching ? (
+                      <span className="py-1">
+                        <Spinner />
+                      </span>
+                    ) : (
+                      <span className="text-zinc-400">View more</span>
+                    )}
+                  </button>
                 )}
-              </button>
-            )}
-          </div>
+              </div>
+            </>
+          ) : (
+            <div className="text-zinc-400">This user has never posted.</div>
+          )}
         </div>
         {/* {isFetching && <LoadingBlur />} */}
       </div>

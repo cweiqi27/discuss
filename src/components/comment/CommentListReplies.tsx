@@ -1,3 +1,4 @@
+import { Role, Status } from "@prisma/client";
 import React from "react";
 import { useSortStore } from "store/sortStore";
 import { trpc } from "utils/trpc";
@@ -6,10 +7,19 @@ import CommentLoadingSkeleton from "./CommentLoadingSkeleton";
 
 type CommentListRepliesProps = {
   postId: string;
+  postStatus: Status;
   parentId: string;
+  userId: string | undefined;
+  userRole: Role | undefined;
 };
 
-const CommentListReplies = ({ postId, parentId }: CommentListRepliesProps) => {
+const CommentListReplies = ({
+  postId,
+  parentId,
+  postStatus,
+  userId,
+  userRole,
+}: CommentListRepliesProps) => {
   const { data, hasNextPage, fetchNextPage, isFetching, isFetchingNextPage } =
     trpc.comment.getAllCursor.useInfiniteQuery(
       {
@@ -32,7 +42,15 @@ const CommentListReplies = ({ postId, parentId }: CommentListRepliesProps) => {
   return (
     <>
       {comments.map((comment) => {
-        return <CommentCard key={comment.id} comment={comment} />;
+        return (
+          <CommentCard
+            key={comment.id}
+            comment={comment}
+            postStatus={postStatus}
+            userId={userId}
+            userRole={userRole}
+          />
+        );
       })}
 
       {isFetching && <CommentLoadingSkeleton />}

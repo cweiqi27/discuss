@@ -76,13 +76,13 @@ const RecentActivities = ({
       {(commentsIsLoading || postsIsLoading || !sorted || !mapped) && (
         <Spinner />
       )}
-      <div>
+      <div className="flex w-full flex-col gap-1">
         {activitiesArr &&
           activitiesArr.map((activity) => {
             return (
-              <div key={activity.id} className="text-sm text-zinc-300">
+              <p key={activity.id} className="truncate text-sm text-zinc-300">
                 {activitiesMap.get(activity.id)}
-              </div>
+              </p>
             );
           })}
       </div>

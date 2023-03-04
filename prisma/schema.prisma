@@ -167,7 +167,7 @@ model Comment {
   id        String        @id @default(cuid())
   status    Status        @default(PRESENT)
   content   String        @db.Text
-  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post      Post          @relation(fields: [postId], references: [id], onDelete: NoAction)
   postId    String
   user      User          @relation(fields: [userId], references: [id], onDelete: NoAction)
   userId    String

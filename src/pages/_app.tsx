@@ -8,7 +8,8 @@ import NextNProgress from "nextjs-progressbar";
 import { trpc } from "../utils/trpc";
 
 import "../styles/globals.css";
-import algoliasearch from "algoliasearch";
+import { ALGOLIA_INDEX_NAME, searchClient } from "utils/constants";
+import { InstantSearch } from "react-instantsearch-hooks-web";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -21,7 +22,12 @@ const MyApp: AppType<{ session: Session | null }> = ({
           color="rgb(168,85,247)"
           options={{ showSpinner: false }}
         />
-        <Component {...pageProps} />
+        <InstantSearch
+          searchClient={searchClient}
+          indexName={ALGOLIA_INDEX_NAME}
+        >
+          <Component {...pageProps} />
+        </InstantSearch>
         <Analytics />
       </SessionProvider>
       <ReactQueryDevtools initialIsOpen={false} />
