@@ -37,8 +37,8 @@ const Hit = ({ hit }: HitProps) => {
           <span className="rounded-full bg-zinc-600 px-2 py-1 text-xs text-zinc-400">
             {hit.type}
           </span>
-          <h1>
-            {
+          <h1 className="text-lg font-semibold text-zinc-400">
+            {/* {
               <Highlight
                 classNames={{
                   root: "text-zinc-300",
@@ -48,7 +48,8 @@ const Hit = ({ hit }: HitProps) => {
                 hit={hit}
                 attribute="name"
               />
-            }
+            } */}
+            {hit.name}
           </h1>
         </div>
       </Link>
@@ -80,7 +81,7 @@ const Hit = ({ hit }: HitProps) => {
           </div>
           <span className="text-sm text-zinc-400">{formattedDate}</span>
           <p className="truncate text-lg font-semibold text-zinc-400">
-            <Highlight
+            {/* <Highlight
               classNames={{
                 root: "text-zinc-400",
                 highlighted:
@@ -88,7 +89,8 @@ const Hit = ({ hit }: HitProps) => {
               }}
               hit={hit}
               attribute="title"
-            />
+            /> */}
+            {hit.title}
           </p>
           <p className="truncate text-xs text-zinc-500">{hit.description}</p>
         </div>
@@ -106,7 +108,7 @@ const Hit = ({ hit }: HitProps) => {
           <span className="self-start rounded-full bg-zinc-600 px-2 py-1 text-xs text-zinc-400">
             {hit.type}
           </span>
-          <Highlight
+          {/* <Highlight
             classNames={{
               root: "text-zinc-400",
               highlighted:
@@ -114,7 +116,8 @@ const Hit = ({ hit }: HitProps) => {
             }}
             hit={hit}
             attribute="flairName"
-          />
+          /> */}
+          {hit.flairName}
         </div>
       </Link>
     </>
