@@ -19,3 +19,7 @@ export const ALGOLIA_INDEX_NAME = env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME;
 export const PUSHER_APP_ID = env.NEXT_PUBLIC_PUSHER_APP_ID;
 export const PUSHER_APP_KEY = env.NEXT_PUBLIC_PUSHER_APP_KEY;
 export const PUSHER_APP_CLUSTER = env.NEXT_PUBLIC_PUSHER_APP_CLUSTER;
+
+// Concatenate with actual email
+export const GMAIL_COMPOSE_URL =
+  "https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=";

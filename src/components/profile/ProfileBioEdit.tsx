@@ -2,7 +2,7 @@ import { ErrorMessage } from "@hookform/error-message";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Textarea from "components/form/Textarea";
 import LoadingBlur from "components/LoadingBlur";
-import { Dispatch, SetStateAction } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import type { EditProfileBioFormSchemaType } from "types/form";
 import { EditProfileBioFormSchema } from "types/form";
@@ -38,9 +38,13 @@ const ProfileBioEdit = ({ user, profileBio, setEdit }: ProfileBioEditProps) => {
   const onSubmit = () => {
     const bio: EditProfileBioFormSchemaType["bio"] = getValues("bio");
 
-    if (isDirty) {
-      editProfileBio.mutate({ userId: user.id, content: bio });
-    }
+    if (!isDirty) setEdit(false);
+
+    editProfileBio.mutate({ userId: user.id, content: bio });
+  };
+
+  const handleClickCancel = () => {
+    setEdit(false);
   };
 
   return (
@@ -51,7 +55,7 @@ const ProfileBioEdit = ({ user, profileBio, setEdit }: ProfileBioEditProps) => {
       >
         <Textarea
           name="bio"
-          label="Bio"
+          label="ABOUT ME"
           placeholder={profileBio ? "" : "Say something about yourself"}
           register={register}
           addStyles="h-32 outline-teal-500"
@@ -63,12 +67,21 @@ const ProfileBioEdit = ({ user, profileBio, setEdit }: ProfileBioEditProps) => {
           as="span"
           className="text-pink-400"
         />
-        <button
-          type="submit"
-          className="self-start rounded-full bg-teal-500 px-3 py-1 text-zinc-300 transition hover:opacity-80"
-        >
-          Edit
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="submit"
+            className="rounded-full bg-teal-500 px-3 py-1 text-zinc-300 transition hover:opacity-80"
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            className="rounded-full bg-zinc-800 px-3 py-1 text-zinc-300 hover:opacity-80"
+            onClick={handleClickCancel}
+          >
+            Cancel
+          </button>
+        </div>
         {editProfileBio.isLoading && <LoadingBlur />}
       </form>
     </>

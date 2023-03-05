@@ -14,6 +14,9 @@ import PostHistoryList from "components/history/PostHistory";
 import ProfileBio from "components/profile/ProfileBio";
 import { useMemo } from "react";
 import Spinner from "components/Spinner";
+import ProfileTitleCard from "components/profile/ProfileTitleCard";
+import Contacts from "components/profile/Contacts";
+import Info from "components/profile/Info";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext<{ id: string }>
@@ -39,14 +42,19 @@ const UserPage = (
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) => {
   const { id } = props;
-  const { data, isLoading, isError, isSuccess } = trpc.user.getById.useQuery({
+  const {
+    data: user,
+    isLoading,
+    isError,
+    isSuccess,
+  } = trpc.user.getById.useQuery({
     id,
   });
   const { data: sessionUserId } = trpc.auth.getUserId.useQuery();
 
   const joinedAtDate = useMemo(() => {
-    return data && format(data.createdAt, "MMMM do, yyyy");
-  }, [data]);
+    return user && format(user.createdAt, "MMMM do, yyyy");
+  }, [user]);
 
   return (
     <Layout type="PROFILE">
@@ -55,49 +63,25 @@ const UserPage = (
           <Spinner />
         </div>
       )}
-      <section className="sm:w-[36rem]">
-        {isError && <div>Error</div>}
-        {data && (
-          <>
-            {/* Profile */}
-            <div className="flex flex-col">
-              <div className="flex items-center gap-4">
-                <Avatar
-                  src={data.image ?? ""}
-                  alt={data.name ?? ""}
-                  size="lg"
-                />
-                <div className="flex flex-col gap-1">
-                  <span className="text-3xl font-bold text-zinc-200">
-                    {data.name}
-                  </span>
-                  <span className="text-sm font-semibold text-zinc-400">
-                    {data.role}
-                  </span>
-                </div>
+      {isError && <div>Error</div>}
+      {user && (
+        <>
+          <section className="sm:w-[36rem]">
+            <>
+              {/* Profile */}
+              <ProfileTitleCard user={user} />
+              <div className="mt-4 flex flex-col gap-2">
+                <PostHistoryList userId={user.id} size="md" />
               </div>
-              <div className="flex flex-col">
-                <div>
-                  <span className="text-xs text-zinc-400">Joined at </span>
-                  <span className="text-xs text-zinc-400">{joinedAtDate}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 flex flex-col gap-2">
-              <ProfileBio
-                user={data}
-                isSessionUser={data.id === sessionUserId}
-              />
-              <PostHistoryList userId={data.id} size="md" />
-            </div>
-          </>
-        )}
-      </section>
-      {/* <section className="col-start-1 row-start-2 flex flex-col gap-2">
-        
-      </section> */}
-      <section className="col-start-2 col-end-3 row-start-2 hidden max-w-xs sm:block lg:w-72"></section>
+            </>
+          </section>
+          <section className="col-start-2 col-end-3 hidden max-w-xs gap-2 sm:flex sm:flex-col lg:w-72">
+            <ProfileBio user={user} isSessionUser={user.id === sessionUserId} />
+            <Contacts user={user} />
+            <Info user={user} />
+          </section>
+        </>
+      )}
     </Layout>
   );
 };
