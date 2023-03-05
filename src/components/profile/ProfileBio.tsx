@@ -1,7 +1,6 @@
-import Textarea from "components/form/Textarea";
+import { IconPencil } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import type { RouterOutputs } from "utils/trpc";
-import { trpc } from "utils/trpc";
 import ProfileBioEdit from "./ProfileBioEdit";
 
 type ProfileBioProps = {
@@ -11,9 +10,6 @@ type ProfileBioProps = {
 
 const ProfileBio = ({ user, isSessionUser }: ProfileBioProps) => {
   const [edit, setEdit] = useState<boolean>(false);
-  const { data: profileBio } = trpc.user.getProfileBio.useQuery({
-    userId: user.id,
-  });
   const unsetBioText = useMemo(() => {
     return isSessionUser
       ? "Say something about yourself."
@@ -25,22 +21,27 @@ const ProfileBio = ({ user, isSessionUser }: ProfileBioProps) => {
       {edit ? (
         <ProfileBioEdit
           user={user}
-          profileBio={profileBio?.profileBio ?? undefined}
+          profileBio={user.profileBio ?? ""}
           setEdit={setEdit}
         />
       ) : (
-        <div className="inline-flex items-center gap-2 rounded bg-zinc-800 p-2">
-          <p className="text-lg text-zinc-400">
-            {profileBio && profileBio.profileBio
-              ? profileBio.profileBio
-              : unsetBioText}
-          </p>
-          <button
-            onClick={() => setEdit(true)}
-            className="rounded-full px-3 py-1 text-zinc-300 transition hover:bg-zinc-700 hover:opacity-80"
-          >
-            Edit
-          </button>
+        <div className="flex flex-col rounded border border-zinc-900 transition hover:border-purple-900">
+          <div className="inline-flex items-center justify-between gap-2 rounded-t bg-zinc-800 p-2">
+            <h2 className="text-lg font-semibold text-zinc-300">ABOUT ME</h2>
+            {isSessionUser && (
+              <button
+                onClick={() => setEdit(true)}
+                className="rounded-full p-2 text-zinc-300 transition hover:bg-zinc-700 hover:opacity-80"
+              >
+                <IconPencil />
+              </button>
+            )}
+          </div>
+          <div className="rounded-b bg-zinc-700 p-2">
+            <p className="font-serif text-zinc-400">
+              {user.profileBio ? user.profileBio : unsetBioText}
+            </p>
+          </div>
         </div>
       )}
     </>

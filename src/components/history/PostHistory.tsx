@@ -20,7 +20,7 @@ const PostHistoryList = ({ userId, size }: PostHistoryProps) => {
   const { data, hasNextPage, fetchNextPage, isFetching, isFetchingNextPage } =
     trpc.post.getByUserIdCursor.useInfiniteQuery(
       {
-        limit: 5,
+        limit: 10,
         userId: userId,
       },
       {
@@ -59,7 +59,7 @@ const PostHistoryList = ({ userId, size }: PostHistoryProps) => {
 
   return (
     <>
-      <div className="relative flex flex-col gap-2 rounded border border-zinc-600 bg-zinc-900/80 px-2">
+      <div className="relative flex flex-col gap-2 rounded border border-zinc-800 bg-zinc-900/80 px-2">
         <div className="flex flex-col gap-2 ">
           {formattedPosts.length > 0 ? (
             <>
@@ -82,8 +82,8 @@ const PostHistoryList = ({ userId, size }: PostHistoryProps) => {
                   return (
                     <>
                       {post.isShowDateMap.get(post.id) && (
-                        <div className="sticky top-0 bg-zinc-900 pb-2">
-                          <h3 className="text-xs font-semibold text-zinc-300">
+                        <div className="sticky top-0 rounded bg-purple-900 px-2 pt-1 pb-2 shadow">
+                          <h3 className="cursor-default text-xs font-semibold text-zinc-300">
                             {post.date}
                           </h3>
                         </div>
@@ -91,7 +91,7 @@ const PostHistoryList = ({ userId, size }: PostHistoryProps) => {
                       <Link
                         key={post.id}
                         href={`/posts/${post.id}`}
-                        className="flex items-center justify-between rounded bg-zinc-800 px-4 py-2"
+                        className="flex items-center justify-between rounded bg-zinc-900 px-4 py-2 hover:bg-zinc-800"
                       >
                         <div className="inline-flex max-w-xs gap-2">
                           <span className="text-zinc-300">
