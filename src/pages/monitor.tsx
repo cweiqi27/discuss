@@ -1,6 +1,7 @@
 import Layout from "components/layout/Layout";
+import type { NextPage } from "next";
 
-const MonitorPage = (props) => {
+const MonitorPage: NextPage = (props) => {
   return (
     <Layout type="DOUBLE">
       <section>monitor</section>
