@@ -1,9 +1,5 @@
-import algoliasearch from "algoliasearch/lite";
 import {
   Hits,
-  InfiniteHits,
-  InstantSearch,
-  PoweredBy,
   SearchBox,
   useInstantSearch,
 } from "react-instantsearch-hooks-web";
@@ -35,8 +31,8 @@ type SearchProps = {
 const Search = ({ search, setSearch }: SearchProps) => {
   const searchRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(searchRef, () => setSearch(false));
-
   const { status } = useInstantSearch();
+
   return (
     <>
       {search && (
@@ -49,7 +45,7 @@ const Search = ({ search, setSearch }: SearchProps) => {
               <div className="flex items-center gap-2">
                 <IconSearch className="text-zinc-400" />
                 <SearchBox
-                  placeholder="Search Discuss&#8482;"
+                  placeholder="Search Discuss..."
                   autoFocus
                   resetIconComponent={({ classNames }) => (
                     <IconSquareX className={classNames.resetIcon} />

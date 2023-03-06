@@ -9,10 +9,7 @@ import StickyList from "components/sticky/StickyList";
 import { useEffect } from "react";
 
 const Home: NextPage = (props) => {
-  // const algoliaPushIndex = trpc.algolia.pushAllIndex.useQuery();
-
   const category = useCategoryStore((state) => state.category);
-  const { data: userRole } = trpc.auth.getUserRole.useQuery();
   const { data: userId } = trpc.auth.getUserId.useQuery();
 
   return userId ? (

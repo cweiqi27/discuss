@@ -20,8 +20,8 @@ const ProfileBioEdit = ({ user, profileBio, setEdit }: ProfileBioEditProps) => {
 
   const editProfileBio = trpc.user.createOrEditProfileBio.useMutation({
     onSuccess() {
+      utils.user.getById.invalidate();
       setEdit(false);
-      utils.user.getProfileBio.invalidate();
     },
   });
 
