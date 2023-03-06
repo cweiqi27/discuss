@@ -1,12 +1,14 @@
-import { Menu, Popover } from "@headlessui/react";
+import { Popover } from "@headlessui/react";
 import {
   IconCaretDown,
+  IconDeviceDesktopAnalytics,
   IconLogin,
   IconLogout,
   IconUserCircle,
 } from "@tabler/icons-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useMemo } from "react";
 import { useHeaderStore } from "store/headerStore";
 import UserAvatar from "./avatar/UserAvatar";
 
@@ -14,6 +16,12 @@ const AuthButton = () => {
   const isShowHeader = useHeaderStore((state) => state.showHeader);
 
   const { data: sessionData, status } = useSession();
+
+  const isModOrAdmin = useMemo(() => {
+    return (
+      sessionData?.user?.role === "MOD" || sessionData?.user?.role === "ADMIN"
+    );
+  }, [sessionData]);
 
   const handleClick = () => {
     sessionData ? signOut() : signIn("google");
@@ -27,7 +35,7 @@ const AuthButton = () => {
           onClick={handleClick}
         >
           <IconLogin />
-          Sign in
+          Sign In
         </button>
       )}
       {status === "loading" && (
@@ -63,12 +71,21 @@ const AuthButton = () => {
                 <IconUserCircle />
                 Profile
               </Link>
+              {isModOrAdmin && (
+                <Link
+                  href="/monitor"
+                  className="inline-flex gap-1 rounded p-2 text-zinc-300 transition hover:bg-violet-800"
+                >
+                  <IconDeviceDesktopAnalytics />
+                  Monitor
+                </Link>
+              )}
               <button
                 className="inline-flex gap-1 rounded p-2 text-zinc-300 transition hover:bg-violet-800"
                 onClick={handleClick}
               >
                 <IconLogout />
-                Sign out
+                Sign Out
               </button>
             </Popover.Panel>
           </div>

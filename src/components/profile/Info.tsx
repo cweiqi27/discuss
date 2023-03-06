@@ -13,7 +13,7 @@ const Info = ({ user }: InfoProps) => {
   }, [user]);
 
   return (
-    <div>
+    <div className="rounded border border-zinc-900 transition hover:border-purple-900">
       <div className="rounded-t bg-zinc-800 p-2">
         <h2 className="text-lg font-semibold text-zinc-300">OTHER INFO</h2>
       </div>

@@ -52,7 +52,7 @@ const UserPage = (
   const { data: sessionUserId } = trpc.auth.getUserId.useQuery();
 
   return (
-    <Layout type="PROFILE">
+    <Layout type="DOUBLE">
       {isLoading && (
         <div className="fixed top-1/2 left-1/2 right-1/2 flex flex-col items-center justify-center gap-2 text-2xl text-zinc-300">
           <Spinner />
