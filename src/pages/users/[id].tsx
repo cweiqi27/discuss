@@ -46,15 +46,10 @@ const UserPage = (
     data: user,
     isLoading,
     isError,
-    isSuccess,
   } = trpc.user.getById.useQuery({
     id,
   });
   const { data: sessionUserId } = trpc.auth.getUserId.useQuery();
-
-  const joinedAtDate = useMemo(() => {
-    return user && format(user.createdAt, "MMMM do, yyyy");
-  }, [user]);
 
   return (
     <Layout type="PROFILE">
