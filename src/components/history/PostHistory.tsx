@@ -59,7 +59,7 @@ const PostHistoryList = ({ userId, size }: PostHistoryProps) => {
 
   return (
     <>
-      <div className="relative flex flex-col gap-2 rounded border border-zinc-800 bg-zinc-900/80 px-2">
+      <div className="relative flex flex-col gap-2 rounded border border-zinc-800 bg-zinc-900/80 px-2 transition hover:border-purple-900">
         <div className="flex flex-col gap-2 ">
           {formattedPosts.length > 0 ? (
             <>

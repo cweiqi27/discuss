@@ -13,7 +13,7 @@ const ProfileTitleCard = ({ user }: ProfileTitleCardProps) => {
   }, [user]);
 
   return (
-    <div className="flex items-center gap-4 rounded border border-zinc-700 bg-purple-900/20 pl-4">
+    <div className="flex items-center gap-4 rounded border border-zinc-700 bg-purple-900/20 pl-4 transition hover:border-purple-900">
       <Avatar src={user.image ?? ""} alt={user.name ?? ""} size="lg" />
       <div className="flex w-full flex-col gap-1 rounded-r bg-zinc-800 p-2">
         <span className="text-3xl font-bold text-zinc-200">{user.name}</span>

@@ -76,7 +76,7 @@ const PostList = (props: PostListProps) => {
       {isFetching && <PostLoadingSkeleton />}
 
       {!hasNextPage && (
-        <div className="text-zinc-400">
+        <div className="italic text-zinc-500">
           You&apos;ve reached the world&apos;s edge, none but devils play past
           here.
         </div>

@@ -38,7 +38,7 @@ const ProfileBio = ({ user, isSessionUser }: ProfileBioProps) => {
             )}
           </div>
           <div className="rounded-b bg-zinc-700 p-2">
-            <p className="font-serif text-zinc-400">
+            <p className="break-words font-serif text-zinc-400">
               {user.profileBio ? user.profileBio : unsetBioText}
             </p>
           </div>
