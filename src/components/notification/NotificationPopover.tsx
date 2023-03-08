@@ -20,8 +20,8 @@ const NotificationPopover = () => {
   const utils = trpc.useContext();
 
   useEffect(() => {
-    Pusher.logToConsole = true;
     let pusherClient: Pusher;
+
     if (Pusher.instances.length) {
       pusherClient = Pusher.instances[0] as Pusher;
       pusherClient.connect();
