@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useScrollPositionDebounce } from "utils/hooks";
+import { useScrollPositionDebounce } from "utils/scroll";
 import { trpc } from "utils/trpc";
 import PostCard from "./PostCard";
 import PostLoadingSkeleton from "./PostLoadingSkeleton";
