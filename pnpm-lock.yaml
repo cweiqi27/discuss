@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@algolia/client-search': ^4.14.3
+  '@faker-js/faker': ^7.6.0
   '@headlessui/react': ^1.7.10
   '@headlessui/tailwindcss': ^0.1.2
   '@hookform/error-message': ^2.0.1
@@ -111,6 +112,7 @@ dependencies:
   zustand-utils: 1.1.2_react@18.2.0+zustand@4.3.5
 
 devDependencies:
+  '@faker-js/faker': 7.6.0
   '@testing-library/jest-dom': 5.16.5
   '@testing-library/react': 13.4.0_biqbaboplfbrettd7655fr4n2y
   '@types/node': 18.14.4
@@ -618,6 +620,11 @@ packages:
   /@eslint/js/8.35.0:
     resolution: {integrity: sha512-JXdzbRiWclLVoD8sNUjR443VVlYqiYmDVT6rGUEIEHU5YJW0gaVZwV2xgM7D4arkvASqD0IlLUVjHiFuxaftRw==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    dev: true
+
+  /@faker-js/faker/7.6.0:
+    resolution: {integrity: sha512-XK6BTq1NDMo9Xqw/YkYyGjSsg44fbNwYRx7QK2CuoQgyy+f1rrTDHoExVM5PsyXCtfl2vs2vVJ0MN0yN6LppRw==}
+    engines: {node: '>=14.0.0', npm: '>=6.0.0'}
     dev: true
 
   /@headlessui/react/1.7.12_biqbaboplfbrettd7655fr4n2y:
