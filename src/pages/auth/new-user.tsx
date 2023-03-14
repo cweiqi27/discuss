@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { trpc } from "utils/trpc";
 
 const NewUser: NextPage = (props) => {
-  const { isLoading, isSuccess, isError } = trpc.auth.assignRole.useQuery();
+  const { isLoading, isSuccess, isError } = trpc.auth.assignRole.useQuery({});
   const { data: userName } = trpc.auth.getUserName.useQuery();
   const { data: userId } = trpc.auth.getUserId.useQuery();
 
