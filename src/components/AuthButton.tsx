@@ -91,13 +91,6 @@ const AuthButton = () => {
           </div>
         </Popover>
       )}
-      {status === "unauthenticated" && (
-        <div className="fixed bottom-10 left-0 flex w-screen justify-center sm:hidden">
-          <button className="rounded-full bg-zinc-700/80 px-4 py-2 text-center text-lg font-semibold text-zinc-200">
-            Sign in to comment
-          </button>
-        </div>
-      )}
     </>
   );
 };
