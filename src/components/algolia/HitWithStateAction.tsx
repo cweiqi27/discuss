@@ -7,11 +7,14 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo } from "react";
+import { Dispatch, SetStateAction, useMemo } from "react";
 import { Highlight } from "react-instantsearch-hooks-web";
+import { useUserInputStore } from "store/inputStore";
 import type { HitProps } from "types/algolia";
 
-const Hit = ({ hit }: HitProps) => {
+const HitWithStateAction = ({ hit }: HitProps) => {
+  const setInput = useUserInputStore((state) => state.setInput);
+
   const formattedDate = useMemo(() => {
     if (hit.createdAt)
       return formatDistanceToNow(new Date(hit.createdAt)) + " ago";
@@ -20,9 +23,9 @@ const Hit = ({ hit }: HitProps) => {
   return hit.name ? (
     <>
       {/* User */}
-      <Link
-        className="group mb-2 flex items-center gap-4 rounded bg-zinc-700 p-3 transition hover:bg-zinc-900"
-        href={`/users/${hit.objectID}`}
+      <button
+        className="group mb-2 flex w-full items-center gap-4 rounded bg-zinc-700 p-3 transition hover:bg-zinc-900"
+        onClick={() => setInput(hit.objectID)}
       >
         {hit.image && (
           <Image
@@ -34,9 +37,6 @@ const Hit = ({ hit }: HitProps) => {
           />
         )}
         <div>
-          <span className="rounded-full bg-zinc-600 px-2 py-1 text-xs text-zinc-400">
-            {hit.type}
-          </span>
           <h1 className="text-lg font-semibold text-zinc-400">
             {/* {
               <Highlight
@@ -52,13 +52,13 @@ const Hit = ({ hit }: HitProps) => {
             {hit.name}
           </h1>
         </div>
-      </Link>
+      </button>
     </>
   ) : hit.title ? (
     <>
       {/* Post */}
-      <Link
-        href={`/posts/${hit.objectID}`}
+      <button
+        onClick={() => setInput(hit.objectID)}
         className="mb-2 flex items-center gap-4 rounded bg-zinc-700 p-3 transition hover:bg-zinc-900"
       >
         {hit.category === "discussion" ? (
@@ -94,13 +94,13 @@ const Hit = ({ hit }: HitProps) => {
           </p>
           <p className="truncate text-xs text-zinc-500">{hit.description}</p>
         </div>
-      </Link>
+      </button>
     </>
   ) : hit.flairName ? (
     <>
       {/* Flair */}
-      <Link
-        href={`/flairs/${hit.objectID}`}
+      <button
+        onClick={() => setInput(hit.objectID)}
         className="mb-2 flex items-center gap-4 rounded bg-zinc-700 p-3 transition hover:bg-zinc-900"
       >
         <IconTag className="h-[48px] w-[48px] text-zinc-400" />
@@ -119,11 +119,11 @@ const Hit = ({ hit }: HitProps) => {
           /> */}
           {hit.flairName}
         </div>
-      </Link>
+      </button>
     </>
   ) : (
     <></>
   );
 };
 
-export default Hit;
+export default HitWithStateAction;
