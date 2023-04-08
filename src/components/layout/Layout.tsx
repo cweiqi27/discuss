@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Script from "next/script";
 import TimelineContainer from "./TimelineContainer";
 import Header from "./Header";
 import MainContainer from "./MainContainer";

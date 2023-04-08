@@ -1,4 +1,4 @@
-import { Line } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -7,75 +7,55 @@ import {
   Tooltip,
   Legend,
   LineElement,
+  BarElement,
   PointElement,
 } from "chart.js";
 import { useMemo } from "react";
-import { getMonthsInYear } from "utils/date";
+import { useMonthsInYear } from "utils/date";
 import type { RouterOutputs } from "utils/trpc";
 import { trpc } from "utils/trpc";
 import LoadingBlur from "components/LoadingBlur";
 
-type VotesReceivedReportProps = {
+type MonthlyVotesReceivedReportProps = {
   user: RouterOutputs["user"]["getById"];
 };
 
-const VotesReceivedReport = ({ user }: VotesReceivedReportProps) => {
+const MonthlyVotesReceivedReport = ({ user }: MonthlyVotesReceivedReportProps) => {
   ChartJS.register(
     CategoryScale,
     LinearScale,
-    LineElement,
-    PointElement,
+    BarElement,
     Title,
     Tooltip,
     Legend
   );
 
   const options = {
-    responsive: true,
     plugins: {
       legend: {
         position: "top" as const,
       },
       title: {
         display: true,
-        text: user.name ?? "",
+        text: "Votes Received",
       },
       responsive: true,
     },
   };
 
   const monthsFromStartOfYearToNow =
-    getMonthsInYear().monthsFromStartOfYearToNow;
+    useMonthsInYear().monthsFromStartOfYearToNow;
   const { data: voteCount, isLoading } =
-    trpc.vote.getMonthlyVoteByUserId.useQuery({
+    trpc.vote.getReceivedByUserMonthly.useQuery({
       id: user.id,
       monthsFromStartOfYearToNow: monthsFromStartOfYearToNow,
     });
 
-  const calculateVotes = () => {
-    if (!voteCount) return null;
-    const voteCountArr = [];
-    for (let i = 0; i < voteCount.upvoteArr.length; i++) {
-      const upvote = voteCount.upvoteArr[i] ?? 0;
-      const downvote = voteCount.downvoteArr[i] ?? 0;
-      voteCountArr.push(upvote - downvote);
-    }
-    return voteCountArr;
-  };
-
-  const calculatedVotes = useMemo(calculateVotes, [voteCount]);
-
-  const labels = getMonthsInYear().monthsInYear;
+  const labels = useMonthsInYear().monthsInYear;
 
   const data = {
     labels,
     datasets: [
-      {
-        label: "👍 to 👎 ratio",
-        data: calculatedVotes,
-        borderColor: "rgb(147 51 234)",
-        backgroundColor: "rgb(168 85 247)",
-      },
       {
         label: "👍",
         data: voteCount ? voteCount.upvoteArr : 0,
@@ -92,11 +72,11 @@ const VotesReceivedReport = ({ user }: VotesReceivedReportProps) => {
   };
 
   return (
-    <div className="relative">
-      <Line options={options} data={data} />
+    <div className="relative rounded border border-zinc-700 bg-zinc-800 p-4">
+      <Bar options={options} data={data} />
       {isLoading && <LoadingBlur />}
     </div>
   );
 };
 
-export default VotesReceivedReport;
+export default MonthlyVotesReceivedReport;

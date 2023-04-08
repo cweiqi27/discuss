@@ -1,5 +1,5 @@
 import { VoteType } from "@prisma/client";
-import { addMonths, endOfMonth, startOfYear } from "date-fns";
+import { addMonths, endOfMonth, startOfMonth, startOfYear } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 
@@ -123,7 +123,7 @@ export const voteRouter = router({
       return { votes };
     }),
 
-  getMonthlyGivenVoteCountByUserId: protectedProcedure
+  getGivenByUserMonthly: publicProcedure
     .input(
       z.object({
         id: z.string(),
@@ -147,13 +147,19 @@ export const voteRouter = router({
                   postVotes: {
                     where: {
                       voteType: "UPVOTE",
-                      createdAt: { lte: beforeDate },
+                      createdAt: {
+                        lte: beforeDate,
+                        gte: startOfMonth(beforeDate),
+                      },
                     },
                   },
                   commentVotes: {
                     where: {
                       voteType: "UPVOTE",
-                      createdAt: { lte: beforeDate },
+                      createdAt: {
+                        lte: beforeDate,
+                        gte: startOfMonth(beforeDate),
+                      },
                     },
                   },
                 },
@@ -174,13 +180,19 @@ export const voteRouter = router({
                   postVotes: {
                     where: {
                       voteType: "DOWNVOTE",
-                      createdAt: { lte: beforeDate },
+                      createdAt: {
+                        lte: beforeDate,
+                        gte: startOfMonth(beforeDate),
+                      },
                     },
                   },
                   commentVotes: {
                     where: {
                       voteType: "DOWNVOTE",
-                      createdAt: { lte: beforeDate },
+                      createdAt: {
+                        lte: beforeDate,
+                        gte: startOfMonth(beforeDate),
+                      },
                     },
                   },
                 },
@@ -197,15 +209,81 @@ export const voteRouter = router({
       return { upvoteArr, downvoteArr };
     }),
 
-  getMonthlyVoteByUserId: protectedProcedure
+  getGivenByUserAll: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { id } = input;
+      const upvoteArr: number[] = [];
+      const downvoteArr: number[] = [];
+      await ctx.prisma.user
+        .findUnique({
+          where: { id: id },
+          select: {
+            _count: {
+              select: {
+                postVotes: {
+                  where: {
+                    voteType: "UPVOTE",
+                  },
+                },
+                commentVotes: {
+                  where: {
+                    voteType: "UPVOTE",
+                  },
+                },
+              },
+            },
+          },
+        })
+        .then((user) => {
+          upvoteArr.push(
+            user ? user._count.postVotes + user._count.commentVotes : 0
+          );
+        });
+
+      await ctx.prisma.user
+        .findUnique({
+          where: { id: id },
+          select: {
+            _count: {
+              select: {
+                postVotes: {
+                  where: {
+                    voteType: "DOWNVOTE",
+                  },
+                },
+                commentVotes: {
+                  where: {
+                    voteType: "DOWNVOTE",
+                  },
+                },
+              },
+            },
+          },
+        })
+        .then((user) => {
+          downvoteArr.push(
+            user ? user._count.postVotes + user._count.commentVotes : 0
+          );
+        });
+
+      return { upvoteArr, downvoteArr };
+    }),
+
+  getReceivedByUserMonthly: protectedProcedure
     .input(
       z.object({
         id: z.string(),
         monthsFromStartOfYearToNow: z.number(),
+        isAccumulate: z.boolean().nullish(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { id, monthsFromStartOfYearToNow } = input;
+      const { id, monthsFromStartOfYearToNow, isAccumulate } = input;
       const upvoteArr: number[] = [];
       const downvoteArr: number[] = [];
       let beforeDate = startOfYear(Date.now());
@@ -223,7 +301,12 @@ export const voteRouter = router({
                       votes: {
                         where: {
                           voteType: "UPVOTE",
-                          createdAt: { lte: beforeDate },
+                          createdAt: {
+                            lte: beforeDate,
+                            gte: isAccumulate
+                              ? undefined
+                              : startOfMonth(beforeDate),
+                          },
                         },
                       },
                     },
@@ -237,7 +320,12 @@ export const voteRouter = router({
                       votes: {
                         where: {
                           voteType: "UPVOTE",
-                          createdAt: { lte: beforeDate },
+                          createdAt: {
+                            lte: beforeDate,
+                            gte: isAccumulate
+                              ? undefined
+                              : startOfMonth(beforeDate),
+                          },
                         },
                       },
                     },
@@ -270,7 +358,12 @@ export const voteRouter = router({
                       votes: {
                         where: {
                           voteType: "DOWNVOTE",
-                          createdAt: { lte: beforeDate },
+                          createdAt: {
+                            lte: beforeDate,
+                            gte: isAccumulate
+                              ? undefined
+                              : startOfMonth(beforeDate),
+                          },
                         },
                       },
                     },
@@ -284,7 +377,12 @@ export const voteRouter = router({
                       votes: {
                         where: {
                           voteType: "DOWNVOTE",
-                          createdAt: { lte: beforeDate },
+                          createdAt: {
+                            lte: beforeDate,
+                            gte: isAccumulate
+                              ? undefined
+                              : startOfMonth(beforeDate),
+                          },
                         },
                       },
                     },
@@ -308,6 +406,106 @@ export const voteRouter = router({
       }
 
       return { upvoteArr, downvoteArr };
+    }),
+
+  getReceivedByUserAll: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { id } = input;
+      let upvotes = 0;
+      let downvotes = 0;
+
+      await ctx.prisma.user
+        .findUnique({
+          where: { id: id },
+          select: {
+            posts: {
+              select: {
+                _count: {
+                  select: {
+                    votes: {
+                      where: {
+                        voteType: "UPVOTE",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            comments: {
+              select: {
+                _count: {
+                  select: {
+                    votes: {
+                      where: {
+                        voteType: "UPVOTE",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        })
+        .then((user) => {
+          if (user) {
+            user.posts.map((post) => {
+              upvotes += post._count.votes;
+            });
+            user.comments.map((comment) => {
+              upvotes += comment._count.votes;
+            });
+          }
+        });
+
+      await ctx.prisma.user
+        .findUnique({
+          where: { id: id },
+          select: {
+            posts: {
+              select: {
+                _count: {
+                  select: {
+                    votes: {
+                      where: {
+                        voteType: "DOWNVOTE",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            comments: {
+              select: {
+                _count: {
+                  select: {
+                    votes: {
+                      where: {
+                        voteType: "DOWNVOTE",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        })
+        .then((user) => {
+          if (user) {
+            user.posts.map((post) => {
+              downvotes += post._count.votes;
+            });
+            user.comments.map((comment) => {
+              downvotes += comment._count.votes;
+            });
+          }
+        });
+
+      return { upvotes, downvotes };
     }),
 
   create: protectedProcedure

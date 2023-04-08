@@ -13,7 +13,14 @@ type DeleteProps = {
   addStyles?: string;
 };
 
-const Delete = ({ id, userId, title, type, role, addStyles }: DeleteProps) => {
+const DeletePostComment = ({
+  id,
+  userId,
+  title,
+  type,
+  role,
+  addStyles,
+}: DeleteProps) => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const utils = trpc.useContext();
   const deletePost = trpc.post.delete.useMutation({
@@ -48,7 +55,7 @@ const Delete = ({ id, userId, title, type, role, addStyles }: DeleteProps) => {
   return (
     <>
       <button
-        className={`flex items-center justify-center transition ${addStyles}`}
+        className={`flex items-center transition ${addStyles}`}
         onClick={() => setShowModal(true)}
       >
         <IconTrash />
@@ -56,28 +63,33 @@ const Delete = ({ id, userId, title, type, role, addStyles }: DeleteProps) => {
       </button>
       <Dialog open={showModal} onClose={() => setShowModal(false)}>
         <div className="fixed inset-0 grid place-items-center bg-zinc-900/70 p-4 backdrop-blur">
-          <Dialog.Panel className="flex w-full max-w-sm flex-col gap-4 rounded bg-gradient-to-br from-zinc-200/60 to-zinc-200/80 p-6">
+          <Dialog.Panel className="flex w-full max-w-sm flex-col gap-4 rounded bg-gradient-to-br from-zinc-600/80 to-zinc-600/100 p-6">
             <div className="flex flex-col gap-1">
-              <Dialog.Title className="text-xl font-bold text-zinc-900">
+              <Dialog.Title className="text-xl font-bold text-zinc-100">
                 Delete
               </Dialog.Title>
-              <Dialog.Description className="text-sm text-zinc-800">
-                You are about to delete{" "}
-                {type === "POST" ? "a post" : "a comment"}
+              <Dialog.Description className="text-sm text-zinc-300">
+                You are about to delete a{" "}
+                <span className="font-medium">
+                  {type === "POST" ? "post" : "comment"}
+                </span>
                 {"."}
               </Dialog.Description>
             </div>
-            <p className="truncate">Are you sure you want to remove {title}?</p>
+            <p className="truncate text-sm text-zinc-300">
+              Are you sure you want to remove{" "}
+              <span className="font-medium">{title}</span>?
+            </p>
             <div className="flex gap-1">
               <button
                 onClick={handleClickDelete}
-                className="rounded-full bg-rose-500 px-3 py-1 text-zinc-300 transition hover:bg-rose-600"
+                className="rounded-full bg-red-500 px-3 py-1 text-zinc-300 transition hover:bg-red-600"
               >
                 Delete
               </button>
               <button
                 onClick={() => setShowModal(false)}
-                className="rounded-full bg-zinc-600 px-3 py-1 text-zinc-300 hover:bg-zinc-700"
+                className="rounded-full bg-zinc-50/10 px-3 py-1 text-zinc-300 hover:bg-zinc-50/20 hover:text-zinc-100"
               >
                 Cancel
               </button>
@@ -89,4 +101,4 @@ const Delete = ({ id, userId, title, type, role, addStyles }: DeleteProps) => {
   );
 };
 
-export default Delete;
+export default DeletePostComment;

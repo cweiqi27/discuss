@@ -35,6 +35,7 @@ const NotificationPopover = () => {
           headers: { user_id: randomUserId },
         },
       });
+      pusherClient.signin();
     }
 
     const userChannel = "user-" + sessionUserId;
@@ -53,7 +54,7 @@ const NotificationPopover = () => {
     isFetchingNextPage,
   } = trpc.notification.getAllCursor.useInfiniteQuery(
     {
-      limit: 7,
+      limit: 10,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -111,7 +112,7 @@ const NotificationPopover = () => {
   };
 
   return sessionData ? (
-    <Popover className="relative">
+    <Popover className="sm:relative">
       <Popover.Button
         onClickCapture={handleClickPopover}
         className="relative inline-flex rounded-full p-2 outline-none transition-colors hover:bg-zinc-700 ui-open:bg-purple-600/30"
@@ -132,13 +133,12 @@ const NotificationPopover = () => {
         leave="transition duration-75 ease-out"
         leaveFrom="transform scale-100 opacity-100"
         leaveTo="transform scale-95 opacity-0"
-      >
-        <Popover.Panel
-          className={`absolute right-0 top-1 ${
-            isShowHeader ? "block" : "hidden"
-          } overflow-y-auto rounded-md 
+        className={`fixed right-0 top-20 max-h-[90dvh] w-full sm:absolute sm:top-12 ${
+          isShowHeader ? "block" : "hidden"
+        } overflow-y-auto rounded-md 
 bg-zinc-800 shadow shadow-zinc-600 sm:right-1 sm:h-auto sm:max-h-[80vh] sm:w-72`}
-        >
+      >
+        <Popover.Panel>
           <div className="border-b-[1px] border-zinc-400 p-2">
             <h2 className="text-2xl font-semibold text-zinc-200">
               Notifications

@@ -7,6 +7,7 @@ import { imageRouter } from "./image";
 import { notificationRouter } from "./notification";
 import { postRouter } from "./post";
 import { pusherRouter } from "./pusher";
+import { seedRouter } from "./seed";
 import { userRouter } from "./user";
 import { voteRouter } from "./vote";
 
@@ -21,6 +22,7 @@ export const appRouter = router({
   algolia: algoliaRouter,
   notification: notificationRouter,
   vote: voteRouter,
+  seed: seedRouter,
 });
 
 // export type definition of API

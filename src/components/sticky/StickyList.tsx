@@ -1,3 +1,4 @@
+import { IconSticker } from "@tabler/icons-react";
 import NavBackToTop from "components/NavBackToTop";
 import { motion } from "framer-motion";
 import { useStickyStore } from "store/stickyStore";
@@ -21,7 +22,9 @@ const StickyList = () => {
       variants={stickyVariants}
       animate={isLiftSticky ? "enter" : "exit"}
     >
-      <h2 className="bg-zinc-900 text-2xl font-bold text-zinc-200">STICKY</h2>
+      <h2 className="inline-flex items-center gap-2 bg-zinc-900 text-2xl font-bold text-zinc-200">
+        <IconSticker /> STICKY
+      </h2>
       <div className="mb-6 h-[70vh] space-y-2 overflow-y-auto bg-zinc-900">
         {isLoading && (
           <>

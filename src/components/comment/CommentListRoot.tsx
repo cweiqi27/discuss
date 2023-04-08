@@ -3,7 +3,7 @@ import { Status } from "@prisma/client";
 import SortByButton from "components/SortByButton";
 import { useEffect, useState } from "react";
 import { useSortStore } from "store/sortStore";
-import { useScrollPositionDebounce } from "utils/hooks";
+import { useScrollPositionDebounce } from "utils/scroll";
 import { trpc } from "utils/trpc";
 import CommentCard from "./CommentCard";
 import CommentLoadingSkeleton from "./CommentLoadingSkeleton";

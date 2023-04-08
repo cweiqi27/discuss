@@ -10,11 +10,17 @@ import { prisma } from "../../../server/db/client";
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
   callbacks: {
+    async signIn({ user }) {
+      if (user.status === "REMOVED") return false;
+      return true;
+    },
+
     async session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
         session.user.role = user.role;
       }
+
       return session;
     },
   },

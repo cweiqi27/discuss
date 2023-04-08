@@ -5,11 +5,11 @@ import PostCard from "./PostCard";
 import PostLoadingSkeleton from "./PostLoadingSkeleton";
 
 type PostListProps = {
-  children?: React.ReactNode;
-  categoryName: string;
+  categoryName?: string;
+  flairId?: string;
 };
 
-const PostList = (props: PostListProps) => {
+const PostList = ({ categoryName, flairId }: PostListProps) => {
   const [scrollPosition, setScrollPosition] = useState<number>(0);
 
   useScrollPositionDebounce(
@@ -22,9 +22,12 @@ const PostList = (props: PostListProps) => {
     500
   );
 
-  const { data: category } = trpc.category.getByName.useQuery({
-    name: props.categoryName,
-  });
+  const { data: category } = trpc.category.getByName.useQuery(
+    {
+      name: categoryName ?? "",
+    },
+    { enabled: categoryName !== undefined }
+  );
 
   const {
     data,
@@ -33,15 +36,20 @@ const PostList = (props: PostListProps) => {
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
-  } = trpc.post.getByCategoryCursor.useInfiniteQuery(
-    {
-      limit: 5,
-      categoryId: category?.id ?? "",
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    }
-  );
+  } = categoryName
+    ? trpc.post.getByCategoryCursor.useInfiniteQuery(
+        {
+          limit: 5,
+          categoryId: category?.id ?? "",
+        },
+        {
+          getNextPageParam: (lastPage) => lastPage.nextCursor,
+        }
+      )
+    : trpc.post.getByFlairCursor.useInfiniteQuery({
+        limit: 5,
+        flairId: flairId ?? "",
+      });
 
   const posts = data?.pages.flatMap((page) => page.posts) ?? [];
 

@@ -1,4 +1,5 @@
 import { Role, Status } from "@prisma/client";
+import { addMonths, endOfMonth, startOfMonth, startOfYear } from "date-fns";
 import { z } from "zod";
 import {
   router,
@@ -21,6 +22,10 @@ export const postRouter = router({
     } catch (e) {
       console.log(e);
     }
+  }),
+
+  getCountAll: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.post.count();
   }),
 
   getById: publicProcedure
@@ -55,14 +60,113 @@ export const postRouter = router({
       })
     )
     .query(async ({ ctx, input }) => {
-      const { limit, cursor } = input;
+      const { limit, cursor, categoryId } = input;
       const posts = await ctx.prisma.post.findMany({
         take: limit + 1,
         orderBy: {
           createdAt: "desc",
         },
         where: {
-          categoryId: input.categoryId,
+          categoryId: categoryId,
+          status: "PRESENT",
+        },
+        cursor: cursor ? { id: cursor } : undefined,
+        include: {
+          user: {
+            select: {
+              name: true,
+              image: true,
+              id: true,
+            },
+          },
+          flairs: {
+            select: {
+              flairId: true,
+            },
+          },
+        },
+      });
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (posts.length > limit) {
+        const nextItem = posts.pop() as (typeof posts)[number];
+        nextCursor = nextItem.id;
+      }
+      return {
+        posts,
+        nextCursor,
+      };
+    }),
+
+  getAllByCursorSortComments: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).default(10),
+        cursor: z.string().nullish(),
+        isMonth: z.boolean().nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { limit, cursor, isMonth } = input;
+      const posts = await ctx.prisma.post.findMany({
+        take: limit + 1,
+        orderBy: {
+          comments: {
+            _count: "desc",
+          },
+        },
+        where: {
+          status: "PRESENT",
+          createdAt: { gte: isMonth ? startOfMonth(Date.now()) : undefined },
+        },
+        cursor: cursor ? { id: cursor } : undefined,
+        include: {
+          user: {
+            select: {
+              name: true,
+              image: true,
+              id: true,
+            },
+          },
+          flairs: {
+            select: {
+              flairId: true,
+            },
+          },
+          comments: true,
+        },
+      });
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (posts.length > limit) {
+        const nextItem = posts.pop() as (typeof posts)[number];
+        nextCursor = nextItem.id;
+      }
+      return {
+        posts,
+        nextCursor,
+      };
+    }),
+
+  getByFlairCursor: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).default(10),
+        cursor: z.string().nullish(),
+        flairId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { limit, cursor, flairId } = input;
+      const posts = await ctx.prisma.post.findMany({
+        take: limit + 1,
+        orderBy: {
+          createdAt: "desc",
+        },
+        where: {
+          flairs: {
+            some: {
+              flairId: flairId,
+            },
+          },
           status: "PRESENT",
         },
         cursor: cursor ? { id: cursor } : undefined,
@@ -98,17 +202,49 @@ export const postRouter = router({
         limit: z.number().min(1).max(100).default(10),
         cursor: z.string().nullish(),
         userId: z.string(),
+        deleted: z.boolean().default(false),
+        orderBy: z
+          .enum([
+            "createdAtDesc",
+            "createdAtAsc",
+            "commentsAsc",
+            "commentsDesc",
+            "votesAsc",
+            "votesDesc",
+          ])
+          .default("createdAtDesc"),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { limit, cursor } = input;
+      const { limit, cursor, deleted, orderBy } = input;
+
       const posts = await ctx.prisma.post.findMany({
         take: limit + 1,
-        orderBy: {
-          createdAt: "desc",
-        },
+        orderBy: [
+          {
+            createdAt:
+              orderBy === "createdAtDesc"
+                ? "desc"
+                : orderBy === "createdAtAsc"
+                ? "asc"
+                : undefined,
+            comments:
+              orderBy === "commentsAsc" || orderBy === "commentsDesc"
+                ? {
+                    _count: orderBy === "commentsAsc" ? "asc" : "desc",
+                  }
+                : undefined,
+            votes:
+              orderBy === "votesAsc" || orderBy === "votesDesc"
+                ? {
+                    _count: orderBy === "votesAsc" ? "asc" : "desc",
+                  }
+                : undefined,
+          },
+        ],
         where: {
           userId: input.userId,
+          status: deleted ? undefined : "PRESENT",
         },
         cursor: cursor ? { id: cursor } : undefined,
         include: {
@@ -127,6 +263,140 @@ export const postRouter = router({
         posts,
         nextCursor,
       };
+    }),
+
+  getCountByUserMonthly: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        monthsFromStartOfYearToNow: z.number(),
+        isAccumulate: z.boolean().nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { id, monthsFromStartOfYearToNow, isAccumulate } = input;
+      const postArr: number[] = [];
+      let beforeDate = startOfYear(Date.now());
+      for (let i = 0; i < monthsFromStartOfYearToNow; i++) {
+        beforeDate =
+          i === 0 ? endOfMonth(beforeDate) : addMonths(beforeDate, 1);
+        await ctx.prisma.post
+          .count({
+            where: {
+              userId: id,
+              createdAt: {
+                lte: beforeDate,
+                gte: isAccumulate ? undefined : startOfMonth(beforeDate),
+              },
+            },
+          })
+          .then((post) => {
+            postArr.push(post);
+          })
+          .catch((e) => console.log(e));
+      }
+      return postArr;
+    }),
+
+  getAllCountFilterFlair: publicProcedure.query(async ({ ctx }) => {
+    const flairPostArr: {
+      flairId: string | null;
+      flairName: string;
+      postCount: number;
+    }[] = [];
+
+    await ctx.prisma.flair.findMany().then((flairs) => {
+      flairs.map(async (flair) => {
+        await ctx.prisma.post
+          .count({
+            where: {
+              flairs: {
+                some: {
+                  flairId: flair.id,
+                },
+              },
+            },
+          })
+          .then((postCount) => {
+            flairPostArr.push({
+              flairId: flair.id,
+              flairName: flair.flairName,
+              postCount: postCount,
+            });
+          });
+      });
+    });
+
+    await ctx.prisma.post
+      .count({
+        where: {
+          flairs: undefined,
+        },
+      })
+      .then((postCount) => {
+        flairPostArr.push({
+          flairId: null,
+          flairName: "Without flair",
+          postCount: postCount,
+        });
+      });
+
+    return flairPostArr;
+  }),
+
+  getAllCountByUserFilterFlair: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { id } = input;
+      const flairPostArr: {
+        flairId: string | null;
+        flairName: string;
+        postCount: number;
+      }[] = [];
+
+      await ctx.prisma.flair.findMany().then((flairs) => {
+        flairs.map(async (flair) => {
+          await ctx.prisma.post
+            .count({
+              where: {
+                userId: id,
+                flairs: {
+                  some: {
+                    flairId: flair.id,
+                  },
+                },
+              },
+            })
+            .then((postCount) => {
+              flairPostArr.push({
+                flairId: flair.id,
+                flairName: flair.flairName,
+                postCount: postCount,
+              });
+            });
+        });
+      });
+
+      await ctx.prisma.post
+        .count({
+          where: {
+            userId: id,
+            flairs: undefined,
+          },
+        })
+        .then((postCount) => {
+          flairPostArr.push({
+            flairId: null,
+            flairName: "Without flair",
+            postCount: postCount,
+          });
+        });
+
+      return flairPostArr;
     }),
 
   getSticky: publicProcedure.query(async ({ ctx }) => {
@@ -153,6 +423,30 @@ export const postRouter = router({
       console.log(e);
     }
   }),
+
+  getFlairById: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { id } = input;
+      return await ctx.prisma.flair.findUnique({ where: { id: id } });
+    }),
+
+  getFlairIdByName: publicProcedure
+    .input(
+      z.object({
+        name: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { name } = input;
+      return await ctx.prisma.flair.findFirstOrThrow({
+        where: { flairName: name },
+      });
+    }),
 
   getFlairsByPost: publicProcedure
     .input(
@@ -254,29 +548,31 @@ export const postRouter = router({
     .input(
       z.object({
         postId: z.string().min(1),
-        userId: z.string(),
+        userId: z.string().min(1),
         title: z.string(),
         description: z.string(),
         flairIdArr: z.array(z.string()),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      if (input.userId !== ctx.session.user.id) return;
+      const { postId, userId, title, description, flairIdArr } = input;
+
+      if (userId !== ctx.session.user.id) return;
       try {
         await ctx.prisma.postFlair.deleteMany({
-          where: { postId: input.postId },
+          where: { postId: postId },
         });
 
         return await ctx.prisma.post.update({
-          where: { id: input.postId },
+          where: { id: postId },
           data: {
-            title: input.title,
-            description: input.description,
+            title: title,
+            description: description,
             flairs: {
-              connectOrCreate: input.flairIdArr.map((flairId) => {
+              connectOrCreate: flairIdArr.map((flairId) => {
                 return {
                   where: {
-                    postId_flairId: { postId: input.postId, flairId: flairId },
+                    postId_flairId: { postId: postId, flairId: flairId },
                   },
                   create: { flairId: flairId },
                 };
@@ -310,22 +606,30 @@ export const postRouter = router({
       try {
         if (!status && input.userId !== ctx.session.user.id) return;
         if (status) {
-          return await ctx.prisma.post.update({
-            where: { id: input.postId },
-            data: {
-              status: status,
-              updatedAt: new Date(),
-            },
-          });
+          return await ctx.prisma.post
+            .update({
+              where: { id: input.postId },
+              data: {
+                status: status,
+                updatedAt: new Date(),
+              },
+            })
+            .then(() => {
+              ctx.algolia.deleteObject(input.postId);
+            });
         }
         if (input.userId === ctx.session.user.id) {
-          return await ctx.prisma.post.update({
-            where: { id: input.postId },
-            data: {
-              status: "REMOVED_BY_USER",
-              updatedAt: new Date(),
-            },
-          });
+          return await ctx.prisma.post
+            .update({
+              where: { id: input.postId },
+              data: {
+                status: "REMOVED_BY_USER",
+                updatedAt: new Date(),
+              },
+            })
+            .then(() => {
+              ctx.algolia.deleteObject(input.postId);
+            });
         }
       } catch (e) {
         console.log(e);

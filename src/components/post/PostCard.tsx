@@ -2,7 +2,6 @@ import { Menu } from "@headlessui/react";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import Avatar from "components/avatar/Avatar";
 import CommentButton from "components/comment/CommentButton";
-import Delete from "components/Delete";
 import DotsMenu from "components/DotsMenu";
 import {
   differenceInDays,
@@ -18,7 +17,7 @@ import { trpc } from "utils/trpc";
 import PostContent from "./PostContent";
 import PostFlairList from "./PostFlairList";
 import PostTitle from "./PostTitle";
-import Vote from "./Vote";
+import Vote from "../Vote";
 
 type PostCardProps = {
   post: RouterOutputs["post"]["getByCategoryCursor"]["posts"][number];
@@ -74,7 +73,7 @@ const PostCard = ({ post }: PostCardProps) => {
         <Avatar
           size="md"
           src={post.user.image ?? ""}
-          alt={post.user.name ?? ""}
+          name={post.user.name ?? ""}
           profileSlug={post.user.id ?? ""}
           addStyles="hidden place-self-center sm:block"
         />
@@ -89,7 +88,7 @@ const PostCard = ({ post }: PostCardProps) => {
             <Avatar
               size="md"
               src={post.user.image ?? ""}
-              alt={post.user.name ?? ""}
+              name={post.user.name ?? ""}
               profileSlug={post.user.id ?? ""}
               addStyles="block sm:hidden"
             />
@@ -125,7 +124,7 @@ const PostCard = ({ post }: PostCardProps) => {
               <Menu.Item as="div">
                 {post.userId === userId && (
                   <Link
-                    href={`posts/${post.id}`}
+                    href={`/posts/${post.id}`}
                     className="flex w-full items-center justify-start gap-2 rounded px-2 py-1 text-zinc-400 hover:bg-zinc-600 hover:text-zinc-100"
                   >
                     <IconPencil />
@@ -138,7 +137,7 @@ const PostCard = ({ post }: PostCardProps) => {
                   userRole === "ADMIN" ||
                   post.userId === userId) && (
                   <Link
-                    href={`posts/${post.id}`}
+                    href={`/posts/${post.id}`}
                     className="flex w-full items-center justify-start gap-2 rounded px-2 py-1 text-zinc-400 hover:bg-zinc-600 hover:text-zinc-100"
                   >
                     <IconTrash />

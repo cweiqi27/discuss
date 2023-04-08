@@ -1,5 +1,5 @@
 import { IconBell, IconSearch } from "@tabler/icons-react";
-import Search from "components/algolia/Search";
+import SearchModal from "components/algolia/SearchModal";
 import AuthButton from "components/AuthButton";
 import LogoLink from "components/LogoLink";
 import NotificationPopover from "components/notification/NotificationPopover";
@@ -9,7 +9,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { useHeaderStore } from "store/headerStore";
 import { useStickyStore } from "store/stickyStore";
 import { headerVariants } from "utils/framer";
-import { useScrollPositionDebounce } from "utils/hooks";
+import { useScrollPositionDebounce } from "utils/scroll";
 import { trpc } from "utils/trpc";
 
 const Header = () => {
@@ -65,7 +65,7 @@ const Header = () => {
         variants={headerVariants}
         animate={isShowHeader ? "enter" : "exit"}
         className={`fixed top-0 ${
-          search ? "" : "z-50"
+          search ? "" : "z-40"
         } flex h-20 w-full items-center justify-between
           border-b-[0.05rem] border-zinc-800 bg-gradient-to-r from-zinc-900/20 to-zinc-900/40 pb-1 backdrop-blur md:px-4`}
       >
@@ -88,7 +88,7 @@ const Header = () => {
           <AuthButton />
         </div>
       </motion.nav>
-      <Search search={search} setSearch={setSearch} />
+      {!!search && <SearchModal setSearch={setSearch} />}
     </>
   );
 };

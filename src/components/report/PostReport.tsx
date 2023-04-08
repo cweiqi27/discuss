@@ -8,22 +8,20 @@ import {
   Legend,
   BarElement,
 } from "chart.js";
-import { getMonthsInYear } from "utils/date";
+import { useMonthsInYear } from "utils/date";
 import type { RouterOutputs } from "utils/trpc";
 import { trpc } from "utils/trpc";
 import { useMemo } from "react";
 import LoadingBlur from "components/LoadingBlur";
 
-type VotesGivenReportProps = {
+type PostReportProps = {
   user: RouterOutputs["user"]["getById"];
 };
 
-const VotesGivenReport = ({ user }: VotesGivenReportProps) => {
+const PostReport = ({ user }: PostReportProps) => {
   ChartJS.register(
     CategoryScale,
     LinearScale,
-    // LineElement,
-    // PointElement,
     BarElement,
     Title,
     Tooltip,
@@ -31,26 +29,31 @@ const VotesGivenReport = ({ user }: VotesGivenReportProps) => {
   );
 
   const options = {
-    responsive: true,
     plugins: {
       legend: {
         position: "top" as const,
       },
       title: {
         display: true,
-        text: "User performance",
+        text: "Posts and Comments Published",
       },
       responsive: true,
     },
   };
 
-  const labels = getMonthsInYear().monthsInYear;
+  const labels = useMonthsInYear().monthsInYear;
 
   const monthsFromStartOfYearToNow =
-    getMonthsInYear().monthsFromStartOfYearToNow;
+    useMonthsInYear().monthsFromStartOfYearToNow;
 
-  const { data: voteCount, isLoading } =
-    trpc.vote.getMonthlyGivenVoteCountByUserId.useQuery({
+  const { data: postCount, isLoading: postIsLoading } =
+    trpc.post.getCountByUserMonthly.useQuery({
+      id: user.id,
+      monthsFromStartOfYearToNow: monthsFromStartOfYearToNow,
+    });
+
+  const { data: commentCount, isLoading: commentIsLoading } =
+    trpc.comment.getCountByUserMonthly.useQuery({
       id: user.id,
       monthsFromStartOfYearToNow: monthsFromStartOfYearToNow,
     });
@@ -59,26 +62,26 @@ const VotesGivenReport = ({ user }: VotesGivenReportProps) => {
     labels,
     datasets: [
       {
-        label: "Upvotes",
-        data: voteCount ? voteCount.upvoteArr : 0,
+        label: "Posts",
+        data: postCount ?? 0,
         borderColor: "rgb(147 51 234)",
         backgroundColor: "rgb(168 85 247)",
       },
       {
-        label: "Downvotes",
-        data: voteCount ? voteCount.downvoteArr : 0,
-        borderColor: "rgb(225 29 72)",
-        backgroundColor: "rgb(244 63 94)",
+        label: "Comments",
+        data: commentCount ?? 0,
+        borderColor: "rgb(20 184 166)",
+        backgroundColor: "rgb(13 148 136)",
       },
     ],
   };
 
   return (
-    <div className="relative w-full">
-      {isLoading && <LoadingBlur />}
+    <div className="relative rounded border border-zinc-700 bg-zinc-800 p-4">
+      {(postIsLoading || commentIsLoading) && <LoadingBlur />}
       <Bar options={options} data={data} />
     </div>
   );
 };
 
-export default VotesGivenReport;
+export default PostReport;

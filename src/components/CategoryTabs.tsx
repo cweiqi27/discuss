@@ -1,6 +1,10 @@
 import { useCategoryStore } from "store/categoryStore";
 
-const CategoryTabs = () => {
+type CategoryTabsProps = {
+  isMobile?: boolean;
+};
+
+const CategoryTabs = ({ isMobile }: CategoryTabsProps) => {
   const category = useCategoryStore((state) => state.category);
   const updateDiscussion = useCategoryStore(
     (state) => state.updateCategoryDiscussion

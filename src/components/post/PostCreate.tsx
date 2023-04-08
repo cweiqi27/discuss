@@ -26,7 +26,6 @@ import {
 } from "@tabler/icons-react";
 import LoadingBlur from "components/LoadingBlur";
 import Toast from "components/Toast";
-import { useHeaderStore } from "store/headerStore";
 
 const ModalGeneric = lazy(() => import("components/modal/ModalGeneric"));
 

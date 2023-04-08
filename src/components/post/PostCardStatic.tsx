@@ -6,18 +6,23 @@ import { trpc } from "utils/trpc";
 import { usePostEditStore } from "store/postStaticStore";
 import PostEdit from "./PostEdit";
 import PostFlairList from "./PostFlairList";
-import { IconPencil, IconTrash } from "@tabler/icons-react";
-import Vote from "./Vote";
+import { IconEye, IconPencil, IconTrash } from "@tabler/icons-react";
+import Vote from "../Vote";
 import CommentCreate from "components/comment/CommentCreate";
 import RemovedMessage from "./RemovedMessage";
-import Delete from "components/Delete";
+import DeletePostComment from "components/DeletePostComment";
 
 type PostCardStaticProps = {
   post: RouterOutputs["post"]["getById"]["post"];
   category: string;
+  memberCount?: number;
 };
 
-const PostCardStatic = ({ post, category }: PostCardStaticProps) => {
+const PostCardStatic = ({
+  post,
+  category,
+  memberCount,
+}: PostCardStaticProps) => {
   /**
    * Zustand stores
    */
@@ -54,14 +59,15 @@ const PostCardStatic = ({ post, category }: PostCardStaticProps) => {
             <Avatar
               size="md"
               src={post.user.image ?? ""}
-              alt={post.user.name ?? ""}
+              name={post.user.name ?? ""}
+              profileSlug={post.user.id}
             />
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-zinc-300">
+              <span className="font-semibold text-zinc-300">
                 {post.user.name}
               </span>
               <div className="inline-flex gap-2">
-                <span className="text-sm text-zinc-300">{postDate}</span>
+                <span className="text-sm text-zinc-400">{postDate}</span>
                 {!isEqual(post.createdAt, post.updatedAt) && (
                   <span className="text-sm text-zinc-400">
                     {post.status === "PRESENT" ? "(edited:" : "(removed:"}{" "}
@@ -115,15 +121,18 @@ const PostCardStatic = ({ post, category }: PostCardStaticProps) => {
                     {((userId && post.userId === userId) ||
                       userRole === "ADMIN" ||
                       userRole === "MOD") && (
-                      <Delete
+                      <DeletePostComment
                         id={post.id}
                         userId={post.userId}
                         title={post.title}
                         type="POST"
                         role={userRole}
-                        addStyles="rounded-full gap-2 rounded px-3 py-1 text-zinc-400 hover:bg-zinc-600 hover:text-zinc-100"
+                        addStyles="justify-center rounded-full gap-2 px-3 py-1 text-zinc-400 hover:bg-zinc-600 hover:text-zinc-100"
                       />
                     )}
+                    <div className="inline-flex items-center gap-2 text-lg text-zinc-500">
+                      <IconEye /> {memberCount ?? 0}
+                    </div>
                   </div>
                   <CommentCreate postId={post.id} postStatus={post.status} />
                 </>

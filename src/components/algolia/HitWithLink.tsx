@@ -117,7 +117,9 @@ const HitWithLink = ({ hit }: HitProps) => {
             hit={hit}
             attribute="flairName"
           /> */}
-          {hit.flairName}
+          <p className="truncate text-lg font-semibold text-zinc-400">
+            {hit.flairName}
+          </p>
         </div>
       </Link>
     </>

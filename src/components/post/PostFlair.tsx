@@ -6,15 +6,13 @@ type PostFlairProps = {
   addStyles?: string;
 };
 
-const PostFlair = (props: PostFlairProps) => {
+const PostFlair = ({ flair, addStyles }: PostFlairProps) => {
   return (
-    <Link href="/">
+    <Link href={`/flairs/${flair.flair.id}`}>
       <div
-        className={`${"cursor-pointer rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-zinc-300 hover:bg-white/20"} ${
-          props.addStyles
-        } `}
+        className={`${"cursor-pointer rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-zinc-300 hover:bg-white/20"} ${addStyles} `}
       >
-        {props.flair.flair.flairName}
+        {flair.flair.flairName}
       </div>
     </Link>
   );

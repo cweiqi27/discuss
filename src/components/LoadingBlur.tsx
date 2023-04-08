@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { trpc } from "utils/trpc";
 import Spinner from "./Spinner";
 
 const LoadingBlur = () => {
