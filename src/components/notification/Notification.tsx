@@ -54,7 +54,7 @@ const Notification = ({ notification }: NotificationProps) => {
         <Avatar
           size="md"
           src={notificationInitiatorImage}
-          alt={notificationInitiatorName}
+          name={notificationInitiatorName}
         />
       </div>
       <div className="flex flex-col gap-2 overflow-auto">

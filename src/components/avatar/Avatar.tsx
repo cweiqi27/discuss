@@ -3,13 +3,13 @@ import Link from "next/link";
 
 type AvatarProps = {
   src: string;
-  alt: string;
+  name: string;
   size: "sm" | "md" | "lg";
   addStyles?: string;
   profileSlug?: string;
 };
 
-const Avatar = ({ src, alt, size, addStyles, profileSlug }: AvatarProps) => {
+const Avatar = ({ src, name, size, addStyles, profileSlug }: AvatarProps) => {
   let widthHeight = 0;
   let twWidth = "",
     twHeight = "";
@@ -35,7 +35,7 @@ const Avatar = ({ src, alt, size, addStyles, profileSlug }: AvatarProps) => {
     <Link href={`/users/${profileSlug}`}>
       <Image
         src={src}
-        alt={alt}
+        alt={`${name}'s avatar`}
         width={widthHeight}
         height={widthHeight}
         className={`rounded-full hover:opacity-80 ${addStyles}`}
@@ -44,7 +44,7 @@ const Avatar = ({ src, alt, size, addStyles, profileSlug }: AvatarProps) => {
   ) : (
     <Image
       src={src}
-      alt={alt}
+      alt={`${name}'s avatar`}
       width={widthHeight}
       height={widthHeight}
       className={`rounded-full hover:opacity-80 ${addStyles}`}

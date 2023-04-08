@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { categories, flairs, notificationType } from "./data.mjs";
+import { categories, flairs, notificationType } from "./data.js";
 const prisma = new PrismaClient();
 
 const load = async () => {

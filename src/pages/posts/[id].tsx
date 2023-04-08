@@ -4,19 +4,19 @@ import type {
   InferGetServerSidePropsType,
 } from "next";
 import Layout from "components/layout/Layout";
-import PostEdit from "components/post/PostEdit";
 import { trpc } from "utils/trpc";
-import { createContext, createContextInner } from "server/trpc/context";
+import { createContextInner } from "server/trpc/context";
 import superjson from "superjson";
 import { appRouter } from "server/trpc/router/_app";
 import PostCardStatic from "components/post/PostCardStatic";
 import CommentListRoot from "components/comment/CommentListRoot";
-import SortByButton from "components/SortByButton";
 import AboutProfileCard from "components/profile/AboutProfileCard";
-import { useEffect } from "react";
+import type { PresenceChannel } from "pusher-js";
 import Pusher from "pusher-js";
 import { PUSHER_APP_CLUSTER, PUSHER_APP_KEY } from "utils/constants";
 import Spinner from "components/Spinner";
+import { useEffect, useState } from "react";
+import { IconEye } from "@tabler/icons-react";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext<{ id: string }>
@@ -57,6 +57,29 @@ const PostPage = (
       id: post.post.categoryId,
     });
 
+  const [memberCount, setMemberCount] = useState<number>(0);
+
+  useEffect(() => {
+    const randomUserId = `random-user-id:${Math.random().toFixed(7)}`;
+    const pusherClient = new Pusher(PUSHER_APP_KEY, {
+      forceTLS: true,
+      cluster: PUSHER_APP_CLUSTER,
+      authEndpoint: "/api/pusher/channel-auth",
+      auth: {
+        headers: { user_id: randomUserId },
+      },
+    });
+
+    const channel = pusherClient.subscribe(`presence-${id}`) as PresenceChannel;
+    channel.bind("pusher:subscription_succeeded", () =>
+      setMemberCount(channel.members.count)
+    );
+
+    return () => {
+      pusherClient.unsubscribe(`presence-${id}`);
+    };
+  }, []);
+
   return (
     <Layout type="TIMELINE">
       {isLoading && (
@@ -67,10 +90,13 @@ const PostPage = (
       <section className="sm:w-[36rem]">
         {isError && <div>Error</div>}
         {post && (
-          <PostCardStatic
-            post={post.post}
-            category={category?.data?.categoryName ?? ""}
-          />
+          <>
+            <PostCardStatic
+              post={post.post}
+              category={category?.data?.categoryName ?? ""}
+              memberCount={memberCount}
+            />
+          </>
         )}
       </section>
       <section className="col-start-1 row-start-2 flex flex-col gap-2">
@@ -83,9 +109,8 @@ const PostPage = (
             />
           )}
       </section>
-      <section className="row-span-2 hidden max-w-xs sm:block lg:w-72">
+      <section className="row-span-2 hidden max-w-xs lg:block lg:w-72">
         <AboutProfileCard userId={post?.post?.userId ?? ""} />
-        {/* <AlgoliaShowcase /> */}
       </section>
     </Layout>
   );

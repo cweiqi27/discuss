@@ -11,7 +11,7 @@ import { useMemo } from "react";
 import { Highlight } from "react-instantsearch-hooks-web";
 import type { HitProps } from "types/algolia";
 
-const Hit = ({ hit }: HitProps) => {
+const HitWithLink = ({ hit }: HitProps) => {
   const formattedDate = useMemo(() => {
     if (hit.createdAt)
       return formatDistanceToNow(new Date(hit.createdAt)) + " ago";
@@ -117,7 +117,9 @@ const Hit = ({ hit }: HitProps) => {
             hit={hit}
             attribute="flairName"
           /> */}
-          {hit.flairName}
+          <p className="truncate text-lg font-semibold text-zinc-400">
+            {hit.flairName}
+          </p>
         </div>
       </Link>
     </>
@@ -126,4 +128,4 @@ const Hit = ({ hit }: HitProps) => {
   );
 };
 
-export default Hit;
+export default HitWithLink;

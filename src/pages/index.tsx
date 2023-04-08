@@ -6,7 +6,9 @@ import PostList from "components/post/PostList";
 import CategoryTabs from "components/CategoryTabs";
 import { useCategoryStore } from "store/categoryStore";
 import StickyList from "components/sticky/StickyList";
-import { useEffect } from "react";
+import SignInToCommentButton from "components/SignInToCommentButton";
+import { useState } from "react";
+import { Popover } from "@headlessui/react";
 
 const Home: NextPage = (props) => {
   const category = useCategoryStore((state) => state.category);
@@ -38,9 +40,10 @@ const Home: NextPage = (props) => {
         <PostList categoryName={category} />
       </section>
       {/* Right */}
-      <section className="col-start-2 col-end-3 row-start-2 row-end-3 hidden max-w-xs sm:block lg:w-72">
+      <section className="col-start-2 col-end-3 row-start-2 row-end-3 hidden max-w-xs lg:block lg:w-72">
         <StickyList />
       </section>
+      <SignInToCommentButton />
     </Layout>
   );
 };

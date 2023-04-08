@@ -1,13 +1,28 @@
-import { IconCake, IconGenderBigender } from "@tabler/icons-react";
+import {
+  IconCake,
+  IconGenderBigender,
+  IconStarFilled,
+} from "@tabler/icons-react";
 import { format } from "date-fns";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { usePopper } from "react-popper";
 import type { RouterOutputs } from "utils/trpc";
+import Vogue from "./Vogue";
 
 type InfoProps = {
   user: RouterOutputs["user"]["getById"];
 };
 
 const Info = ({ user }: InfoProps) => {
+  const [popperReference, setPopperReference] = useState(null);
+  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
+    null
+  );
+  const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null);
+  const { styles, attributes } = usePopper(popperReference, popperElement, {
+    modifiers: [{ name: "arrow", options: { element: arrowElement } }],
+  });
+
   const birthDate = useMemo(() => {
     return user.dateOfBirth && format(user.dateOfBirth, "dd/mm/yy");
   }, [user]);
@@ -25,6 +40,22 @@ const Info = ({ user }: InfoProps) => {
         <div className="inline-flex gap-4 p-2 text-zinc-300">
           <IconGenderBigender />
           {user.gender ?? "-"}
+        </div>
+        <div
+          className="inline-flex gap-4 p-2 text-zinc-300"
+          ref={popperReference}
+        >
+          <IconStarFilled />
+          <Vogue user={user} className="text-zinc-400" />
+        </div>
+
+        <div
+          ref={setPopperElement}
+          style={styles.popper}
+          {...attributes.popper}
+        >
+          What&apos;s this?
+          <div ref={setArrowElement} style={styles.arrow} />
         </div>
       </div>
     </div>

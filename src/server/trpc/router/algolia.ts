@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
 
 export const algoliaRouter = router({
@@ -118,6 +119,34 @@ export const algoliaRouter = router({
       console.log(e);
     }
   }),
+  pushUserIndex: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(({ ctx, input }) => {
+      const { id } = input;
+
+      return ctx.prisma.user
+        .findUnique({
+          where: { id: id },
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        })
+        .then((user) => {
+          if (!user) return;
+          ctx.algolia.saveObject({
+            objectID: user.id,
+            name: user.name,
+            image: user.image,
+            type: "User",
+          });
+        });
+    }),
   getClient: publicProcedure.query(({ ctx }) => {
     return ctx.algoliaClient;
   }),

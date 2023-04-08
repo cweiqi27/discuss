@@ -33,6 +33,12 @@ enum Status {
   REMOVED_BY_ADMIN
 }
 
+enum UserStatus {
+  PRESENT
+  WARNING
+  REMOVED
+}
+
 model Faculty {
   facultyId   Int         @id @default(autoincrement())
   facultyName String      @unique
@@ -75,6 +81,7 @@ model User {
   name                 String?
   role                 Role                   @default(USER)
   active               Boolean                @default(true)
+  status               UserStatus             @default(PRESENT)
   dateOfBirth          DateTime?
   gender               Gender?
   phoneNo              Int?                   @unique
@@ -90,9 +97,9 @@ model User {
   sessions             Session[]
   programmes           UserProgramme[]
   posts                Post[]
-  postUpvotes          PostVote[]
+  postVotes            PostVote[]
   comments             Comment[]
-  commentUpvotes       CommentVote[]
+  commentVotes         CommentVote[]
   newNotificationCount Int                    @default(0)
   notificationReceive  NotificationReceive[]
   notificationInitiate NotificationInitiate[]

@@ -1,6 +1,8 @@
 import { Role, Status } from "@prisma/client";
+import { addMonths, endOfMonth, startOfMonth, startOfYear } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
+import { faker } from "@faker-js/faker";
 
 export const commentRouter = router({
   create: protectedProcedure
@@ -13,6 +15,10 @@ export const commentRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const randDate = input.parentId
+        ? new Date()
+        : faker.date.between(faker.date.recent(1), Date.now());
+
       try {
         if (input.status === "PRESENT") {
           return await ctx.prisma.comment.create({
@@ -21,6 +27,7 @@ export const commentRouter = router({
               postId: input.postId,
               userId: ctx.session.user.id,
               parentId: input.parentId,
+              createdAt: randDate,
             },
           });
         } else {
@@ -66,6 +73,7 @@ export const commentRouter = router({
               image: true,
             },
           },
+          post: true,
         },
       });
       let nextCursor: typeof cursor | undefined = undefined;
@@ -86,10 +94,11 @@ export const commentRouter = router({
         cursor: z.string().nullish(),
         userId: z.string(),
         sortBy: z.enum(["timeDesc", "timeAsc", "votes"]),
+        deleted: z.boolean().default(false),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { limit, cursor, sortBy, userId } = input;
+      const { limit, cursor, sortBy, userId, deleted } = input;
 
       const comments = await ctx.prisma.comment.findMany({
         take: limit + 1,
@@ -101,6 +110,10 @@ export const commentRouter = router({
             : { votes: { _count: "desc" } },
         where: {
           userId: userId,
+          post: {
+            status: deleted ? undefined : "PRESENT",
+          },
+          status: deleted ? undefined : "PRESENT",
         },
         include: {
           post: true,
@@ -153,6 +166,38 @@ export const commentRouter = router({
       });
 
       return { childrenCount };
+    }),
+
+  getCountByUserMonthly: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        monthsFromStartOfYearToNow: z.number(),
+        isAccumulate: z.boolean().nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { id, monthsFromStartOfYearToNow, isAccumulate } = input;
+      const commentArr: number[] = [];
+      let beforeDate = startOfYear(Date.now());
+      for (let i = 0; i < monthsFromStartOfYearToNow; i++) {
+        beforeDate =
+          i === 0 ? endOfMonth(beforeDate) : addMonths(beforeDate, 1);
+        await ctx.prisma.comment
+          .count({
+            where: {
+              userId: id,
+              createdAt: {
+                lte: beforeDate,
+                gte: isAccumulate ? undefined : startOfMonth(beforeDate),
+              },
+            },
+          })
+          .then((comment) => {
+            commentArr.push(comment);
+          });
+      }
+      return commentArr;
     }),
 
   updateBySessionUser: protectedProcedure

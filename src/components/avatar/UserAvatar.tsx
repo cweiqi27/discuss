@@ -16,7 +16,7 @@ const UserAvatar = ({ size, linkToProfile, addStyles }: UserAvatarProps) => {
       <Avatar
         size={size}
         src={userImage ?? ""}
-        alt="Me"
+        name="Me"
         profileSlug={linkToProfile ? userId ?? "/" : undefined}
         addStyles={`col-start-1 col-end-2 place-self-end ${addStyles}`}
       />

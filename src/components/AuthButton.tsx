@@ -5,6 +5,7 @@ import {
   IconLogin,
   IconLogout,
   IconUserCircle,
+  IconUsers,
 } from "@tabler/icons-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -72,13 +73,15 @@ const AuthButton = () => {
                 Profile
               </Link>
               {isModOrAdmin && (
-                <Link
-                  href="/monitor"
-                  className="inline-flex gap-1 rounded p-2 text-zinc-300 transition hover:bg-violet-800"
-                >
-                  <IconDeviceDesktopAnalytics />
-                  Monitor
-                </Link>
+                <>
+                  <Link
+                    href="/monitor"
+                    className="inline-flex gap-1 rounded p-2 text-zinc-300 transition hover:bg-violet-800"
+                  >
+                    <IconDeviceDesktopAnalytics />
+                    Monitor
+                  </Link>
+                </>
               )}
               <button
                 className="inline-flex gap-1 rounded p-2 text-zinc-300 transition hover:bg-violet-800"
@@ -90,13 +93,6 @@ const AuthButton = () => {
             </Popover.Panel>
           </div>
         </Popover>
-      )}
-      {status === "unauthenticated" && (
-        <div className="fixed bottom-10 left-0 flex w-screen justify-center sm:hidden">
-          <button className="rounded-full bg-zinc-700/80 px-4 py-2 text-center text-lg font-semibold text-zinc-200">
-            Sign in to comment
-          </button>
-        </div>
       )}
     </>
   );

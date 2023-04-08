@@ -8,8 +8,9 @@ import {
 } from "@tabler/icons-react";
 import Avatar from "components/avatar/Avatar";
 import CountIndicator from "components/CountIndicator";
+import DeletePostComment from "components/DeletePostComment";
 import DotsMenu from "components/DotsMenu";
-import Vote from "components/post/Vote";
+import Vote from "components/Vote";
 import { formatDistanceToNow, isEqual } from "date-fns";
 import Link from "next/link";
 import React, { useMemo, useState } from "react";
@@ -61,7 +62,7 @@ const CommentCard = ({
             <Avatar
               size="sm"
               src={comment.user.image ?? ""}
-              alt={comment.user.name ?? ""}
+              name={comment.user.name ?? ""}
               profileSlug={comment.userId}
             />
             <Link
@@ -103,10 +104,16 @@ const CommentCard = ({
                   {(userRole === "MOD" ||
                     userRole === "ADMIN" ||
                     comment.userId === userId) && (
-                    <button className="flex w-full items-center justify-start gap-2 rounded px-2 py-1 text-zinc-400 hover:bg-zinc-600 hover:text-zinc-100">
-                      <IconTrash />
-                      <span className="text-sm">Delete</span>
-                    </button>
+                    <>
+                      <DeletePostComment
+                        id={comment.id}
+                        userId={comment.userId}
+                        title={comment.content}
+                        type="COMMENT"
+                        role={userRole}
+                        addStyles="gap-2 rounded justify-start px-2 py-1 text-zinc-400 hover:bg-zinc-600 hover:text-zinc-100"
+                      />
+                    </>
                   )}
                 </Menu.Item>
                 <Menu.Item as="div">
@@ -176,7 +183,7 @@ const CommentCard = ({
         {/* Reply comment */}
         {replyComment && (
           <CommentCreate
-            postId={comment.postId}
+            postId={comment.post.id}
             parentId={comment.id}
             postStatus={postStatus}
           />

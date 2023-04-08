@@ -4,19 +4,22 @@ import { trpc } from "utils/trpc";
 
 type RecentActivitiesProps = {
   userId: string;
-  numberOfRecords: number;
+  numberOfRecords?: number;
+  withoutTitle?: boolean;
 };
 
 const RecentActivities = ({
   userId,
   numberOfRecords,
+  withoutTitle,
 }: RecentActivitiesProps) => {
+  const limit = numberOfRecords ?? 5;
   const {
     data: posts,
     isLoading: postsIsLoading,
     isError: postsIsError,
   } = trpc.post.getByUserIdCursor.useQuery({
-    limit: numberOfRecords,
+    limit: limit,
     userId: userId,
   });
   const {
@@ -24,7 +27,7 @@ const RecentActivities = ({
     isLoading: commentsIsLoading,
     isError: commentsIsError,
   } = trpc.comment.getByUserIdCursor.useQuery({
-    limit: numberOfRecords,
+    limit: limit,
     userId: userId,
     sortBy: "timeDesc",
   });
@@ -35,7 +38,7 @@ const RecentActivities = ({
   const setArrToMap = () => {
     const activitiesMap = new Map<string | undefined, string | undefined>();
     let i = 0;
-    while (i < numberOfRecords) {
+    while (i < limit) {
       activitiesMap.set(
         posts?.posts[i]?.id,
         "Created a post: " + posts?.posts[i]?.title
@@ -72,7 +75,13 @@ const RecentActivities = ({
 
   return (
     <>
-      <h2 className="text-zinc-200">Recent Activities</h2>
+      {withoutTitle ? (
+        <></>
+      ) : (
+        <h2 className="font-semibold text-zinc-300 underline decoration-pink-500 decoration-dashed underline-offset-2">
+          RECENT ACTIVITIES
+        </h2>
+      )}
       {(commentsIsLoading || postsIsLoading || !sorted || !mapped) && (
         <Spinner />
       )}
@@ -80,7 +89,10 @@ const RecentActivities = ({
         {activitiesArr &&
           activitiesArr.map((activity) => {
             return (
-              <p key={activity.id} className="truncate text-sm text-zinc-300">
+              <p
+                key={activity.id}
+                className="truncate text-sm text-zinc-400 hover:text-zinc-300"
+              >
                 {activitiesMap.get(activity.id)}
               </p>
             );

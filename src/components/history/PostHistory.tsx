@@ -63,7 +63,7 @@ const PostHistoryList = ({ userId, size }: PostHistoryProps) => {
         <div className="flex flex-col gap-2 ">
           {formattedPosts.length > 0 ? (
             <>
-              <h2 className="py-2 text-2xl font-bold text-zinc-200">
+              <h2 className="py-2 text-2xl font-bold uppercase text-zinc-200">
                 Post History
               </h2>
 
@@ -82,7 +82,7 @@ const PostHistoryList = ({ userId, size }: PostHistoryProps) => {
                   return (
                     <>
                       {post.isShowDateMap.get(post.id) && (
-                        <div className="sticky top-0 rounded bg-purple-900 px-2 pt-1 pb-2 shadow">
+                        <div className="sticky top-0 rounded bg-purple-900 px-2 pt-1 pb-2 shadow shadow-zinc-900">
                           <h3 className="cursor-default text-xs font-semibold text-zinc-300">
                             {post.date}
                           </h3>

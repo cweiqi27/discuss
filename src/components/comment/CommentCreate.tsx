@@ -9,7 +9,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import type { CreateCommentFormSchemaType } from "types/form";
 import { CreateCommentFormSchema } from "types/form";
-import { trpc } from "utils/trpc";
+import { RouterOutputs, trpc } from "utils/trpc";
 
 type CommentCreateProps = {
   parentId?: string;
@@ -51,7 +51,7 @@ const CommentCreate = ({
       getValues("content");
 
     createComment.mutate({
-      postId: postId,
+      postId: postId ?? "",
       content: content,
       status: postStatus,
       parentId: parentId ?? null,
