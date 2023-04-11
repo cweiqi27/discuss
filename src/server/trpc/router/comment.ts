@@ -2,7 +2,6 @@ import { Role, Status } from "@prisma/client";
 import { addMonths, endOfMonth, startOfMonth, startOfYear } from "date-fns";
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
-import { faker } from "@faker-js/faker";
 
 export const commentRouter = router({
   create: protectedProcedure
@@ -15,10 +14,6 @@ export const commentRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const randDate = input.parentId
-        ? new Date()
-        : faker.date.between(faker.date.recent(1), Date.now());
-
       try {
         if (input.status === "PRESENT") {
           return await ctx.prisma.comment.create({
@@ -27,12 +22,10 @@ export const commentRouter = router({
               postId: input.postId,
               userId: ctx.session.user.id,
               parentId: input.parentId,
-              createdAt: randDate,
             },
           });
         } else {
           throw new Error("Not allowed to comment.");
-          return;
         }
       } catch (e) {
         console.log(e);
