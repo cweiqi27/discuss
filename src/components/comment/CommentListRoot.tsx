@@ -101,19 +101,17 @@ const CommentListRoot = ({ postId, postStatus }: CommentListRootProps) => {
           </div>
           <div className="mt-4 rounded-lg border-y border-zinc-600 bg-zinc-900">
             <CommentLoadingSkeleton />
-            <CommentLoadingSkeleton />
-            <CommentLoadingSkeleton />
           </div>
         </div>
       )}
 
-      {isFetchedAfterMount && isFetching && (
+      {/* {isFetchedAfterMount && isFetching && (
         <div className="space-y-2">
           <CommentLoadingSkeleton />
           <CommentLoadingSkeleton />
           <CommentLoadingSkeleton />
         </div>
-      )}
+      )} */}
 
       {!isFetching && comments.length < 1 && (
         <>

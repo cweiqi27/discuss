@@ -17,6 +17,6 @@
     "noUncheckedIndexedAccess": true,
     "baseUrl": "src"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs", "prisma/data.js"],
   "exclude": ["node_modules"]
 }

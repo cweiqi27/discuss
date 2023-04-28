@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Status } from "@prisma/client";
+import type { Status } from "@prisma/client";
 import Textarea from "components/form/Textarea";
 import LoadingBlur from "components/LoadingBlur";
 import Spinner from "components/Spinner";
@@ -9,7 +9,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import type { CreateCommentFormSchemaType } from "types/form";
 import { CreateCommentFormSchema } from "types/form";
-import { RouterOutputs, trpc } from "utils/trpc";
+import { trpc } from "utils/trpc";
 
 type CommentCreateProps = {
   parentId?: string;

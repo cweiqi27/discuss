@@ -13,10 +13,14 @@ import CommentListRoot from "components/comment/CommentListRoot";
 import AboutProfileCard from "components/profile/AboutProfileCard";
 import type { PresenceChannel } from "pusher-js";
 import Pusher from "pusher-js";
-import { PUSHER_APP_CLUSTER, PUSHER_APP_KEY } from "utils/constants";
+import {
+  DOMAIN_NAME,
+  PUSHER_APP_CLUSTER,
+  PUSHER_APP_KEY,
+} from "utils/constants";
 import Spinner from "components/Spinner";
 import { useEffect, useState } from "react";
-import { IconEye } from "@tabler/icons-react";
+import Seo from "components/Seo";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext<{ id: string }>
@@ -81,38 +85,46 @@ const PostPage = (
   }, []);
 
   return (
-    <Layout type="TIMELINE">
-      {isLoading && (
-        <div className="fixed top-1/2 left-1/2 right-1/2 flex flex-col items-center justify-center gap-2 text-2xl text-zinc-300">
-          <Spinner />
-        </div>
-      )}
-      <section className="sm:w-[36rem]">
-        {isError && <div>Error</div>}
-        {post && (
-          <>
-            <PostCardStatic
-              post={post.post}
-              category={category?.data?.categoryName ?? ""}
-              memberCount={memberCount}
-            />
-          </>
+    <>
+      <Seo
+        title={post?.post?.title}
+        desc={post?.post?.description}
+        url={`${DOMAIN_NAME}/users/${id}`}
+        type="profile"
+      />
+      <Layout type="TIMELINE">
+        {isLoading && (
+          <div className="fixed top-1/2 left-1/2 right-1/2 flex flex-col items-center justify-center gap-2 text-2xl text-zinc-300">
+            <Spinner />
+          </div>
         )}
-      </section>
-      <section className="col-start-1 row-start-2 flex flex-col gap-2">
-        {post &&
-          post.post !== null &&
-          category?.data?.categoryName === "discussion" && (
-            <CommentListRoot
-              postId={post.post.id}
-              postStatus={post.post.status}
-            />
+        <section className="sm:w-[36rem]">
+          {isError && <div>Error</div>}
+          {post && (
+            <>
+              <PostCardStatic
+                post={post.post}
+                category={category?.data?.categoryName ?? ""}
+                memberCount={memberCount}
+              />
+            </>
           )}
-      </section>
-      <section className="row-span-2 hidden max-w-xs lg:block lg:w-72">
-        <AboutProfileCard userId={post?.post?.userId ?? ""} />
-      </section>
-    </Layout>
+        </section>
+        <section className="col-start-1 row-start-2 flex flex-col gap-2">
+          {post &&
+            post.post !== null &&
+            category?.data?.categoryName === "discussion" && (
+              <CommentListRoot
+                postId={post.post.id}
+                postStatus={post.post.status}
+              />
+            )}
+        </section>
+        <section className="row-span-2 hidden max-w-xs lg:block lg:w-72">
+          <AboutProfileCard userId={post?.post?.userId ?? ""} />
+        </section>
+      </Layout>
+    </>
   );
 };
 

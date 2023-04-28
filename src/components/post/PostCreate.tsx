@@ -131,7 +131,7 @@ const PostCreate = () => {
   /**
    * User auth details
    */
-  const { data: sessionData } = useSession();
+  const { data: sessionData, status } = useSession();
   const { data: userRole } = trpc.auth.getUserRole.useQuery();
   const isAdminOrMod = userRole === "ADMIN" || userRole === "MOD";
 
@@ -204,7 +204,7 @@ const PostCreate = () => {
                   `}
                 >
                   <span>
-                    {sessionData
+                    {status === "authenticated" || status === "loading"
                       ? "What's on your mind?"
                       : "Sign in to create post"}
                   </span>

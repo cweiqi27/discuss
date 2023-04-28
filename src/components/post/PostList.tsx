@@ -36,6 +36,7 @@ const PostList = ({ categoryName, flairId }: PostListProps) => {
     fetchNextPage,
     isFetching,
     isFetchingNextPage,
+    isRefetching,
   } = categoryName
     ? trpc.post.getByCategoryCursor.useInfiniteQuery(
         {
@@ -81,7 +82,7 @@ const PostList = ({ categoryName, flairId }: PostListProps) => {
         return <PostCard key={post.id} post={post} />;
       })}
 
-      {isFetching && <PostLoadingSkeleton />}
+      {isFetching && !isRefetching && <PostLoadingSkeleton />}
 
       {!hasNextPage && (
         <div className="italic text-zinc-500">
