@@ -1,6 +1,6 @@
 # Discuss
 
-A forum made for education.
+FOSS forum reminiscent of your favourite social media platforms, just a lot more scuffed.
 
 ## Tech Stack
 
