@@ -1,5 +1,4 @@
 import { addMonths, endOfMonth, startOfMonth, startOfYear } from "date-fns";
-import { staffEmail, studentEmail } from "utils/general";
 import { z } from "zod";
 import {
   router,
@@ -146,7 +145,7 @@ export const userRouter = router({
       });
     }),
 
-  delete: adminProcedure
+  delete: protectedProcedure
     .input(
       z.object({
         id: z.string(),
@@ -155,11 +154,15 @@ export const userRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
 
-      return await ctx.prisma.user.update({
-        where: { id: id },
-        data: {
-          status: "REMOVED",
-        },
-      });
+      if (id === ctx.session.user.id || ctx.session.user.role === "ADMIN") {
+        return await ctx.prisma.user.update({
+          where: { id: id },
+          data: {
+            status: "REMOVED",
+          },
+        });
+      } else {
+        return "Unauthorized";
+      }
     }),
 });

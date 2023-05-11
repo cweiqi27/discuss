@@ -1,6 +1,5 @@
 import { Dialog, Disclosure } from "@headlessui/react";
 import {
-  IconAlertTriangle,
   IconCircleArrowDownFilled,
   IconShieldLock,
   IconTrash,
@@ -17,13 +16,16 @@ type SecurityCardProps = {
 const SecurityCard = ({ user }: SecurityCardProps) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const { data: sessionData } = useSession();
-  const deleteUser = trpc.user.delete.useMutation();
+  const deleteUser = trpc.user.delete.useMutation({
+    onSuccess() {
+      if (sessionData?.user?.id === user.id && deleteUser.isSuccess) signOut();
+    },
+  });
 
   const handleClickDelete = () => {
     deleteUser.mutate({
       id: user.id,
     });
-    if (sessionData?.user?.id === user.id && deleteUser.isSuccess) signOut();
   };
 
   return (
@@ -38,23 +40,6 @@ const SecurityCard = ({ user }: SecurityCardProps) => {
             <IconCircleArrowDownFilled className="transition duration-150 ui-open:rotate-180" />
           </Disclosure.Button>
           <Disclosure.Panel className="flex w-full flex-col gap-2">
-            {/* {sessionData?.user?.id !== user.id && (
-              <div className="flex justify-between p-4">
-                <div className="flex flex-col gap-1">
-                  <h3 className="inline-flex gap-1 font-semibold text-zinc-300">
-                    <IconAlertTriangle />
-                    Issue Warning
-                  </h3>
-                  <p className="text-sm text-zinc-400">
-                    Change the user status to{" "}
-                    <span className="font-semibold">warning</span>.
-                  </p>
-                </div>
-                <button className="inline-flex items-center gap-1 rounded border border-red-600 px-2 text-red-600 transition hover:bg-red-600 hover:text-zinc-200">
-                  Issue Warning
-                </button>
-              </div>
-            )} */}
             <div className="flex justify-between p-4">
               <div className="flex flex-col gap-1">
                 <h3 className="inline-flex gap-1 font-semibold text-zinc-300">
@@ -83,7 +68,7 @@ const SecurityCard = ({ user }: SecurityCardProps) => {
       >
         <div className="fixed inset-0 grid place-items-center bg-zinc-900/70 p-4 backdrop-blur">
           <Dialog.Panel
-            className={`w-full max-w-sm space-y-8 rounded bg-zinc-400 p-6 p-2`}
+            className={`w-full max-w-sm space-y-8 rounded bg-zinc-400 p-6 `}
           >
             <div className="space-y-2 rounded">
               <Dialog.Title className={`font-semibold`}>

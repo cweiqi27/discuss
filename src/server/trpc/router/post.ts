@@ -540,7 +540,7 @@ export const postRouter = router({
             }
           );
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     }),
 

@@ -1,6 +1,7 @@
 import { staffEmail, studentEmail } from "utils/general";
 import { z } from "zod";
 import { router, publicProcedure, protectedProcedure } from "../trpc";
+import { env } from "process";
 
 export const authRouter = router({
   getSession: publicProcedure.query(({ ctx }) => {
@@ -29,7 +30,7 @@ export const authRouter = router({
       const userEmail = email ?? ctx.session.user.email;
       const userEmailDomain = userEmail?.split("@")[1];
       try {
-        if (userEmail === "chanweiqi27@gmail.com") {
+        if (userEmail === env.NEXT_PUBLIC_ADMIN_EMAIL) {
           return await ctx.prisma.user.update({
             where: {
               id: ctx.session.user.id,

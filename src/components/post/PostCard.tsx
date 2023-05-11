@@ -26,7 +26,6 @@ type PostCardProps = {
 const PostCard = ({ post }: PostCardProps) => {
   const { data: userRole } = trpc.auth.getUserRole.useQuery();
   const { data: userId } = trpc.auth.getUserId.useQuery();
-
   const { data: discussion } = trpc.category.getByName.useQuery({
     name: "discussion",
   });

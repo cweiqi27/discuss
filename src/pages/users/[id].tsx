@@ -16,6 +16,8 @@ import Contacts from "components/profile/Contacts";
 import Info from "components/profile/Info";
 import { useSession } from "next-auth/react";
 import SecurityCard from "components/profile/SecurityCard";
+import Seo from "components/Seo";
+import { DOMAIN_NAME } from "utils/constants";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext<{ id: string }>
@@ -27,7 +29,7 @@ export const getServerSideProps = async (
   });
   const id = context.params?.id as string;
 
-  await ssg.post.getById.prefetch({ id });
+  await ssg.user.getById.prefetch({ id });
 
   return {
     props: {
@@ -53,34 +55,45 @@ const UserPage = (
   const sessionUserRole = sessionData?.user?.role;
 
   return (
-    <Layout type="DOUBLE">
-      {isLoading && (
-        <div className="fixed top-1/2 left-1/2 right-1/2 flex flex-col items-center justify-center gap-2 text-2xl text-zinc-300">
-          <Spinner />
-        </div>
-      )}
-      {isError && <div>Error</div>}
-      {user && (
-        <>
-          <section className="sm:w-[36rem]">
-            <div className="flex flex-col gap-2">
-              {/* Profile */}
-              <ProfileTitleCard user={user} />
-              <div className="mt-4 flex flex-col gap-2">
-                <PostHistoryList userId={user.id} size="md" />
+    <>
+      <Seo
+        title={user ? user.name : "Discuss"}
+        desc="Scuffed dark theme forum website for your scuffy needs."
+        url={`${DOMAIN_NAME}/users/${id}`}
+        type="profile"
+      />
+      <Layout type="DOUBLE">
+        {isLoading && (
+          <div className="fixed top-1/2 left-1/2 right-1/2 flex flex-col items-center justify-center gap-2 text-2xl text-zinc-300">
+            <Spinner />
+          </div>
+        )}
+        {isError && <div>Error</div>}
+        {user && (
+          <>
+            <section className="sm:w-[36rem]">
+              <div className="flex flex-col gap-2">
+                {/* Profile */}
+                <ProfileTitleCard user={user} />
+                <div className="mt-4 flex flex-col gap-2">
+                  <PostHistoryList userId={user.id} size="md" />
+                </div>
+                {(user.id === sessionUserId || sessionUserRole === "ADMIN") &&
+                  user.status !== "REMOVED" && <SecurityCard user={user} />}
               </div>
-              {(user.id === sessionUserId || sessionUserRole === "ADMIN") &&
-                user.status !== "REMOVED" && <SecurityCard user={user} />}
-            </div>
-          </section>
-          <section className="row-start-2 mt-4 flex w-full flex-col gap-2 sm:col-start-2 sm:row-start-1 lg:w-72">
-            <ProfileBio user={user} isSessionUser={user.id === sessionUserId} />
-            <Contacts user={user} />
-            <Info user={user} />
-          </section>
-        </>
-      )}
-    </Layout>
+            </section>
+            <section className="row-start-2 mt-4 flex w-full flex-col gap-2 sm:col-start-2 sm:row-start-1 lg:w-72">
+              <ProfileBio
+                user={user}
+                isSessionUser={user.id === sessionUserId}
+              />
+              <Contacts user={user} />
+              <Info user={user} />
+            </section>
+          </>
+        )}
+      </Layout>
+    </>
   );
 };
 

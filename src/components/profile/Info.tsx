@@ -5,7 +5,6 @@ import {
 } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { useMemo, useState } from "react";
-import { usePopper } from "react-popper";
 import type { RouterOutputs } from "utils/trpc";
 import Vogue from "./Vogue";
 
@@ -19,9 +18,6 @@ const Info = ({ user }: InfoProps) => {
     null
   );
   const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null);
-  const { styles, attributes } = usePopper(popperReference, popperElement, {
-    modifiers: [{ name: "arrow", options: { element: arrowElement } }],
-  });
 
   const birthDate = useMemo(() => {
     return user.dateOfBirth && format(user.dateOfBirth, "dd/mm/yy");
@@ -47,15 +43,6 @@ const Info = ({ user }: InfoProps) => {
         >
           <IconStarFilled />
           <Vogue user={user} className="text-zinc-400" />
-        </div>
-
-        <div
-          ref={setPopperElement}
-          style={styles.popper}
-          {...attributes.popper}
-        >
-          What&apos;s this?
-          <div ref={setArrowElement} style={styles.arrow} />
         </div>
       </div>
     </div>

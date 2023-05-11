@@ -45,6 +45,7 @@ export const clientSchema = z.object({
   NEXT_PUBLIC_ALGOLIA_QUERY_SUGGESTIONS: z.string(),
   NEXT_PUBLIC_STAFF_EMAIL_DOMAIN: z.string(),
   NEXT_PUBLIC_STUDENT_EMAIL_DOMAIN: z.string(),
+  NEXT_PUBLIC_ADMIN_EMAIL: z.string(),
 });
 
 /**
@@ -66,4 +67,5 @@ export const clientEnv = {
   NEXT_PUBLIC_STAFF_EMAIL_DOMAIN: process.env.NEXT_PUBLIC_STAFF_EMAIL_DOMAIN,
   NEXT_PUBLIC_STUDENT_EMAIL_DOMAIN:
     process.env.NEXT_PUBLIC_STUDENT_EMAIL_DOMAIN,
+  NEXT_PUBLIC_ADMIN_EMAIL: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
 };
