@@ -75,8 +75,5 @@
   },
   "ct3aMetadata": {
     "initVersion": "6.11.3"
-  },
-  "engines": {
-    "node": ">=14.18.x"
   }
 }
