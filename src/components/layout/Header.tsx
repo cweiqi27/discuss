@@ -1,16 +1,15 @@
-import { IconBell, IconSearch } from "@tabler/icons-react";
+import { IconSearch } from "@tabler/icons-react";
 import SearchModal from "components/algolia/SearchModal";
 import AuthButton from "components/AuthButton";
+import CategoryTabs from "components/CategoryTabs";
 import LogoLink from "components/LogoLink";
 import NotificationPopover from "components/notification/NotificationPopover";
-import { motion, Variants } from "framer-motion";
-import Link from "next/link";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useHeaderStore } from "store/headerStore";
 import { useStickyStore } from "store/stickyStore";
 import { headerVariants } from "utils/framer";
 import { useScrollPositionDebounce } from "utils/scroll";
-import { trpc } from "utils/trpc";
 
 const Header = () => {
   /**
@@ -64,13 +63,13 @@ const Header = () => {
       <motion.nav
         variants={headerVariants}
         animate={isShowHeader ? "enter" : "exit"}
-        className={`fixed top-0 ${
-          search ? "" : "z-40"
-        } flex h-20 w-full items-center justify-between
+        className={`fixed top-0 ${search ? "" : "z-40"
+          } flex h-20 w-full items-center justify-between
           border-b-[0.05rem] border-zinc-800 bg-gradient-to-r from-zinc-900/20 to-zinc-900/40 pb-1 backdrop-blur md:px-4`}
       >
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <LogoLink />
+          <CategoryTabs isMobile />
         </div>
         <div className="flex items-center gap-2">
           <button
