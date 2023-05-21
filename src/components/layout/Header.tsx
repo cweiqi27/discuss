@@ -69,7 +69,9 @@ const Header = () => {
       >
         <div className="flex items-center gap-2">
           <LogoLink />
-          <CategoryTabs isMobile />
+          <div className="sm:hidden">
+            <CategoryTabs isMobile />
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <button

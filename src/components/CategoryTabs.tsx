@@ -42,17 +42,15 @@ const CategoryTabs = ({ isMobile }: CategoryTabsProps) => {
             className="absolute flex w-full flex-col gap-2 rounded bg-zinc-800 p-1 shadow shadow-zinc-600"
           >
             <Menu.Item>
-              <div className="flex gap-2 sm:hidden">
-                <button
-                  onClick={updateAnnouncement}
-                  className={`${category === "announcement"
-                      ? "bg-zinc-600 text-zinc-300"
-                      : "bg-zinc-800 text-zinc-400 hover:bg-zinc-600 hover:text-zinc-300"
-                    } inline-flex w-full gap-2 rounded px-3 py-1`}
-                >
-                  <IconSpeakerphone />
-                </button>
-              </div>
+              <button
+                onClick={updateAnnouncement}
+                className={`${category === "announcement"
+                    ? "bg-zinc-600 text-zinc-300"
+                    : "bg-zinc-800 text-zinc-400 hover:bg-zinc-600 hover:text-zinc-300"
+                  } inline-flex w-full gap-2 rounded px-3 py-1`}
+              >
+                <IconSpeakerphone />
+              </button>
             </Menu.Item>
 
             <Menu.Item>
