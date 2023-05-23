@@ -72,12 +72,6 @@ const MonitorPage: NextPage = (props) => {
           <div className="cursor-default text-xl font-bold uppercase text-zinc-300">
             Overview
           </div>
-          <Link
-            href="/monitor/users"
-            className="text-xl font-bold uppercase text-zinc-500 hover:text-zinc-400"
-          >
-            User
-          </Link>
         </div>
         <div className="row-start-3 sm:min-w-[90vw]">
           <div className="flex flex-wrap justify-center gap-2">
